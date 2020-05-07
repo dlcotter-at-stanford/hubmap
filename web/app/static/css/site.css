@@ -1,0 +1,97 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: url(../img/texture_small.png);
+  text-transform: uppercase;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  overflow: hidden;
+  height: 100%;
+  width: 260px;
+  box-sizing: border-box;
+  padding: 20px;
+  background: #303438;
+  color: #ffffff;
+}
+
+#subject {
+  height: 100px;
+  padding-left: 40px;
+  font-family: Times;
+  font-style: italic;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+#controls {
+}
+
+#controls fieldset {
+  margin-bottom: 20px;
+}
+
+#controls legend {
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+
+#controls label {
+  font-size: 14px;
+  letter-spacing: 3px;
+}
+
+#controls input {
+}
+
+#canvas {
+  position: fixed;
+  top: 20px;
+  left: 280px;
+  background-color: #8c8c8c;
+  border: 1px solid #070707;
+}
+
+#info {
+  position: relative;
+  top: 640px;
+  left: 280px;
+  width: 1490px;
+  z-index: -1;
+  border-collapse: collapse;
+}
+
+#info th, #info td {
+  padding: 4px 8px;
+}
+
+#info thead {
+  text-align: left;
+  font-size: 15px;
+  color: #070707;
+}
+
+#info tbody {
+}
+
+#info td {
+  font-size: 14px;
+}
+
+tr.highlighted {
+  background: #8c8c8c;
+  color: #fff;
+  font-style: italic;
+}
+
+#info tfoot th {
+  background: #4f81bd;
+  text-align: left;
+  font-weight: normal;
+  font-size: 10px;
+  color: #fff;
+}
