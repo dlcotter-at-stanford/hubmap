@@ -6,3 +6,5 @@ web/venv
 web/app/static/js/lib
 web/app/__pycache__
 *.tsv
+*.sqp
+*.swp

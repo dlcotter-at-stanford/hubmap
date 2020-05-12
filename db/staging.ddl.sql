@@ -4,8 +4,6 @@ drop schema if exists staging cascade
 ;
 create schema staging
 ;
-drop table if exists staging.sample_tracker_stg
-;
 create table staging.sample_tracker_stg
   (sample_name            varchar(100)
   ,patient                varchar(100)
@@ -50,13 +48,10 @@ create table staging.sample_tracker_stg
   ,single_nuclei          varchar(100)
 )
 ;
-drop table if exists staging.sample_coordinates
-;
 create table staging.sample_coordinates
   (sample_name  varchar(100)
   ,x            integer
   ,y            integer)
-drop table if exists staging.pathology
 ;
 create table staging.pathology
 	(sample                                     varchar(100)
@@ -83,7 +78,7 @@ create table staging.pathology
 	,percentages                                varchar(100)
 	,high_and_low                               varchar(100)
 	,percentages_with_respect_to_previous_row   varchar(100)
-	,percent_of_neoplastic_cell_nuclei_as_a_total_of_all_cell_nuclei_in_tumor_only_area varchar(100)
+	,percent_of_neoplastic_cell_nuclei_as_a_total_of_all_cell_nuclei varchar(100)
 	,percent_of_non_neoplastic_stroma_by_area   varchar(100)
 	,percent_of_entire_tissue_involved_by_tumor varchar(100)
 	,percent_normal_overall                     varchar(100)

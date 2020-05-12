@@ -7,14 +7,10 @@ create schema reporting
 -- the business key will be suffixed with "_id". The data type for primary keys will
 -- be integer (for efficiency) and for business keys will be character (to match
 -- alphanumeric naming convention of study).
-drop table if exists reporting.subject cascade
-;
 create table reporting.subject
   (subject_pk     serial primary key
   ,subject_bk     varchar(100)
   ,disease_status varchar(100))
-;
-drop table if exists reporting.sample cascade
 ;
 create table reporting.sample
   (sample_pk      serial primary key
@@ -34,10 +30,8 @@ create table reporting.sample
   ,y_coord        integer
   ,dysplasia_cat  varchar(100)
   ,dysplasia_pct  integer
-  ,notes          varchar(100)
+  ,notes          varchar(200)
   ,vap_names      varchar(100))
-;
-drop table if exists reporting.tissue cascade
 ;
 create table reporting.tissue
   (tissue_pk      serial primary key
@@ -45,9 +39,6 @@ create table reporting.tissue
   ,tissue_bk      varchar(100)
   ,init_pres_mthd varchar(100)
   ,curr_pres_mthd varchar(100))
-;
-
-drop table if exists reporting."storage"
 ;
 create table reporting."storage"
   (storage_pk serial primary key
@@ -57,8 +48,6 @@ create table reporting."storage"
   ,rack       varchar(100)
   ,box_name   varchar(100))
 ;
-drop table if exists reporting.assay 
-;
 create table reporting.assay
   (assay_pk   serial primary key
   ,tissue_pk  integer references reporting.tissue(tissue_pk)
@@ -67,8 +56,6 @@ create table reporting.assay
   ,researcher varchar(100)
   ,equipment  varchar(100)
   ,seq_depth  varchar(100))
-;
-drop table if exists reporting.pathology
 ;
 create table reporting.pathology
 	(pathology_pk								serial primary key
