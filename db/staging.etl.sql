@@ -21,7 +21,18 @@ from staging.sample_tracker_stg
 truncate table staging.sample_coordinates
 ;
 copy staging.sample_coordinates
-from '/Users/dlcott2/Documents/work/HuBMAP/dev/src/db/sample-coords.tsv'
+from '/Users/dlcott2/Documents/work/HuBMAP/dev/src/colon-map/sample-coords.tsv'
 with delimiter E'\t' --tab separator
 csv header --ignore header
 ;
+
+--load pathology tab-separated flat file into staging table first
+truncate table staging.pathology
+;
+copy staging.pathology
+from '/Users/dlcott2/Documents/work/HuBMAP/dev/colon-map/db/pathology.tsv'
+with delimiter E'\t' --tab separator
+csv header --ignore header
+;
+-- delete example row
+delete from staging.pathology where sample = 'Examples of Responses'
