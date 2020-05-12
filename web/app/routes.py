@@ -7,11 +7,25 @@ import psycopg2
 
 @app.route('/')
 def index():
-  return render_template('index.html')
+  subjects = []
+  
+  try:
+    conn = psycopg2.connect(user='hubmap',password='hubmap',host='127.0.0.1',port='5432',database='hubmap')
+    cursor = conn.cursor()
+    cursor.execute("select distinct subject_bk from reporting.subject where subject_bk ~ '^[A|B].*' order by subject_bk")
+    subjects = [ { 'id': row[0] } for row in cursor.fetchall() ]
+  except (Exception, psycopg2.Error) as error:
+    print(error)
+  finally:
+    if (conn):
+      cursor.close()
+      conn.close()
+
+
+  return render_template('index.html', title='Colon map visualization', subjects=subjects)
 
 @app.route('/map/<subject>')
 def map(subject):
-  
   samples = []
 
   try:
@@ -39,6 +53,6 @@ def map(subject):
       cursor.close()
       conn.close()
 
-  return render_template('index.html', title='Samples', subject=subject, samples=samples)
+  return render_template('map.html', title='Samples', subject=subject, samples=samples)
 
 

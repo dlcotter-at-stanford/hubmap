@@ -8,66 +8,16 @@
     <title>HuBMAP/Stanford TMC</title>
     {% endif %}
     <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='css/site.css') }}">
-    <script type='text/javascript'>
-      var samples = [
-      {% for sample in samples %}
-        { id          : '{{ sample.sample_name }}'
-          ,length     : {{ sample.size_length }}
-          ,width      : {{ sample.size_width }}
-          ,depth      : {{ sample.size_depth }}
-          ,x          : {{ sample.x_coord }}
-          ,y          : {{ sample.y_coord }}
-          ,tissue_type: '{{ sample.stage }}'
-          ,phenotype  : '{{ sample.phenotype }}'
-          ,location   : '{{ sample.organ_piece }}' },
-      {% endfor %}
-      ];
-    </script>
-    <!--<script type='text/javascript' src="{{ url_for('static', filename='js/jquery-3.5.1.js') }}"></script>-->
-    <script type='text/javascript' src="{{ url_for('static', filename='js/script.js') }}"></script>
   </head>
 
   <body>
-    <canvas id='canvas' width=1490 height=600 style="background: url({{ url_for('static', filename='img/' + subject.lower() + '-colon-diagram.png') }})">Your browser does not support the canvas element.</canvas>
-
     <div id='sidebar'>
-      <div id='subject'>{{ subject }}</div>
-      <div id='controls'>
-        <fieldset id='tissue_type_fieldset'>
-          <legend id='tissue_type_legend'>Tissue Type</legend>
-          <input type='checkbox' name='tissue_type' id='tissue_type_normal' value='normal' checked='true'><label for='tissue_type_normal'>Normal</label><br/>
-          <input type='checkbox' name='tissue_type' id='tissue_type_polyp' value='polyp' checked='true'><label for='tissue_type_polyp'>Polyp</label><br/>
-          <input type='checkbox' name='tissue_type' id='tissue_type_adca' value='adca' checked='true'><label for='tissue_type_adca'>AdCa</label><br/>
-        </fieldset>
-
-        <fieldset id='size_fieldset'>
-          <legend id='size_legend'>Size</legend>
-          <input type='checkbox' name='size' id='size_small' value='small' checked='true'><label for='size_small'>Small</label><br/>
-          <input type='checkbox' name='size' id='size_medium' value='medium' checked='true'><label for='size_medium'>Medium</label><br/>
-          <input type='checkbox' name='size' id='size_large' value='large' checked='true'><label for='size_large'>Large</label><br/>
-        </fieldset>
-
-        <fieldset id='phenotype_fieldset'>
-          <legend id='phenotype_legend'>Phenotype</legend>
-          <input type='checkbox' name='phenotype' id='phenotype_normal' value='normal' checked='true'><label for='phenotype_normal'>Normal</label><br/>
-          <input type='checkbox' name='phenotype' id='phenotype_sessile' value='sessile' checked='true'><label for='phenotype_sessile'>Sessile</label><br/>
-          <input type='checkbox' name='phenotype' id='phenotype_stalk' value='stalk' checked='true'><label for='phenotype_stalk'>Stalk</label><br/>
-        </fieldset>
-
-        <fieldset id='location_fieldset'>
-          <legend id='location_legend'>Location</legend>
-          <input type='checkbox' name='location' id='location_ascending' value='ascending' checked='true'><label for='location_ascending'>Ascending</label><br/>
-          <input type='checkbox' name='location' id='location_transverse' value='transverse' checked='true'><label for='location_transverse'>Transverse</label><br/>
-          <input type='checkbox' name='location' id='location_descending' value='descending' checked='true'><label for='location_descending'>Descending</label><br/>
-          <input type='checkbox' name='location' id='location_rectum' value='rectum' checked='true'><label for='location_rectum'>Rectum</label><br/>
-        </fieldset>
-      </div>
+      <div id='subject'>Colon map</div>
+      <ul>
+        {% for subject in subjects %}
+          <li><a href='{{ url_for("map", subject=subject.id) }}'> {{ subject.id }} </a></li>
+        {% endfor %}
+      </ul>
     </div>
-
-    <table id='info'>
-      <thead> <tr> <th>Sample ID</th> <th>Tissue Type</th> <th>Size</th> <th>Size Category</th> <th>Phenotype</th> <th>Location</th> </tr> </thead>
-      <tbody> </tbody>
-      <tfoot> </tfoot>
-    </table>
   </body>
 </html>

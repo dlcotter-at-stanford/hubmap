@@ -27,6 +27,14 @@ body {
   font-weight: bold;
 }
 
+#sidebar ul {
+  list-style-type: none;
+}
+
+#sidebar a {
+  color: #ffffff;
+}
+
 #controls {
 }
 
