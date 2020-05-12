@@ -12,7 +12,13 @@ def index():
   try:
     conn = psycopg2.connect(user='hubmap',password='hubmap',host='127.0.0.1',port='5432',database='hubmap')
     cursor = conn.cursor()
-    cursor.execute("select distinct subject_bk from reporting.subject where subject_bk ~ '^[A|B].*' order by subject_bk")
+    cursor.execute( """select distinct subject_bk
+                       from reporting.subject
+                       join reporting.sample on sample.subject_pk = subject.subject_pk
+                       where subject_bk ~ '^[A|B].*'
+                       and sample.x_coord is not null
+                       and sample.y_coord is not null
+                       order by subject_bk""")
     subjects = [ { 'id': row[0] } for row in cursor.fetchall() ]
   except (Exception, psycopg2.Error) as error:
     print(error)
