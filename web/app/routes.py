@@ -27,7 +27,6 @@ def index():
       cursor.close()
       conn.close()
 
-
   return render_template('index.html', title='Colon map visualization', subjects=subjects)
 
 @app.route('/map/<subject>')
@@ -60,5 +59,4 @@ def map(subject):
       conn.close()
 
   return render_template('map.html', title='Samples', subject=subject, samples=samples)
-
 

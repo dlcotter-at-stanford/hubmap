@@ -28,7 +28,19 @@
   </head>
 
   <body>
-    <canvas id='canvas' width=1490 height=600 style="background: url({{ url_for('static', filename='img/' + subject.lower() + '-colon-diagram.png') }})">Your browser does not support the canvas element.</canvas>
+    <svg xmlns='http://www.w3.org/2000/svg' id='viz'>
+      <line x1='600' y1='0' x2='600' y2='950' style='stroke:gray; stroke-dasharray: 10; stroke-width:2' />
+      <line x1='1190' y1='0' x2='1190' y2='1000' style='stroke:gray; stroke-dasharray: 10; stroke-width:2' />
+      {% for sample in samples %}
+        <circle id='{{ sample.sample_name }}' tissue_type='{{ sample.stage }}' phenotype='{{ sample.phenotype }}' location='{{ sample.organ_piece }}' length='{{ sample.size_length }}' width='{{ sample.size_width }}' depth='{{ sample.size_depth }}' cx='{{ sample.x_coord }}' cy='{{ sample.y_coord }}' r='{{ (sample.size_length|int * sample.size_width|int * sample.size_depth|int) ** (1/3) }}' fill='gray'>
+          <title>{{ sample.sample_name }}
+({{ sample.x_coord }}, {{ sample.y_coord }})
+{{ sample.size_length }} x {{ sample.size_width }} x {{ sample.size_depth }} ({{ (sample.size_length|float * sample.size_width|float * sample.size_depth|float) }} mm³)
+{{ sample.stage }}, {{ sample.phenotype }}, {{ sample.organ_piece }}</title>
+          <!--</title>-->
+        </circle>
+      {% endfor %}
+    </svg> 
 
     <div id='sidebar'>
       <div id='subject'>{{ subject }}</div>
