@@ -1,41 +1,51 @@
 body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 240px auto;
+  grid-template-rows: 100px auto 560px;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
   font-family: Arial, Helvetica, sans-serif;
   background: url(../img/texture_small.png);
   text-transform: uppercase;
 }
 
-#sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  overflow: hidden;
-  height: 100%;
-  width: 260px;
-  box-sizing: border-box;
-  padding: 20px;
+header {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  padding-left: 40px;
+  padding-top: 40px;
   background: #303438;
   color: #ffffff;
-}
-
-#subject {
-  height: 100px;
-  padding-left: 40px;
   font-family: Times;
   font-style: italic;
   font-size: 50px;
   font-weight: bold;
 }
 
-#sidebar ul {
-  list-style-type: none;
-}
-
-#sidebar a {
+aside {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 4;
+  z-index: 1;
+  padding: 20px;
+  background: #303438;
   color: #ffffff;
 }
 
-#controls {
+aside ul {
+  list-style-type: none;
+}
+
+aside a {
+  color: #ffffff;
 }
 
 #controls fieldset {
@@ -53,23 +63,74 @@ body {
   letter-spacing: 3px;
 }
 
-#controls input {
+main {
+  grid-column-start: 2;
+  grid-column-end: -1;
+  grid-row-start: 1;
+  grid-row-end: -1;
 }
 
 #viz {
-  position: fixed;
-  top: 20px;
-  left: 280px;
-  height: 600px;
-  width: 1490px;
+  margin: 20px;
   border: 1px solid #070707;
 }
 
-#info {
+footer {
+  grid-column-start: 2;
+  grid-column-end: -1;
+  grid-row-start: 3;
+  grid-row-end: -1;
+}
+
+#tabs {
   position: relative;
-  top: 640px;
-  left: 280px;
-  width: 1490px;
+  top: 20px;
+  left: 20px;
+  width: 1510px;
+  min-height: 530px;
+  /*clear: both;*/
+}
+
+.tab {
+  float: left;
+  border-radius: 4px 4px 0 0;
+}
+
+.tab label {
+  background: #eee; 
+  padding: 10px; 
+  border: 1px solid #ccc; 
+  margin-left: -1px; 
+  position: relative;
+  left: 1px;
+}
+
+.tab [type=radio] {
+  display: none;   
+}
+
+.content {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  background: white;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  border: 1px solid #ccc; 
+}
+
+[type=radio]:checked ~ label {
+  background: white;
+  border-bottom: 1px solid white;
+  z-index: 2;
+}
+
+[type=radio]:checked ~ label ~ .content {
+  z-index: 1;
+}
+
+#info {
   z-index: -1;
   border-collapse: collapse;
 }

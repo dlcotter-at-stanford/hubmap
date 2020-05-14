@@ -36,7 +36,7 @@ def map(subject):
   try:
     conn = psycopg2.connect(user='hubmap',password='hubmap',host='127.0.0.1',port='5432',database='hubmap')
     cursor = conn.cursor()
-    cursor.execute("""select sample_bk, size_length, size_width, size_depth, x_coord, y_coord, stage, phenotype, organ_piece
+    cursor.execute("""select sample_bk, size_length, size_width, size_depth, x_coord, y_coord::int - 150, stage, phenotype, organ_piece
                       from reporting.sample
                       join reporting.subject on subject.subject_pk = sample.subject_pk
                       where subject.subject_bk = '""" + subject + "' and x_coord is not null and y_coord is not null")
