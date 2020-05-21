@@ -8,3 +8,4 @@ web/app/__pycache__
 *.tsv
 *.swp
 *.svg
+__pycache__

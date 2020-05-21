@@ -15,7 +15,7 @@
       <div id='subject'>Colon map</div>
       <ul>
         {% for subject in subjects %}
-          <li><a href='{{ url_for("map", subject=subject.id) }}'> {{ subject.id }} </a></li>
+          <li><a href='{{ url_for("map", subject=subject.subject_bk) }}'> {{ subject.subject_bk }} </a></li>
         {% endfor %}
       </ul>
     </div>
