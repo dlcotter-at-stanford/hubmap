@@ -39,6 +39,24 @@ class Database:
           self.conn.close()
         return
 
+      # return results as dictionary with column names as keys
       col_names = [ desc[0] for desc in cursor.description ]
       results = [ dict(zip(col_names, row)) for row in cursor.fetchall() ]
       return results
+
+  def get_subjects_with_mapped_samples(self):
+    return self.call_proc('reporting.get_subjects', { 'has_phi': False, 'has_coordinates': True })
+
+  def get_samples_with_coordinates(self, subject):
+    return self.call_proc('reporting.get_samples', { 'p_subject_bk': subject, 'has_coordinates': True })
+
+  def get_pathology_by_subject(self, subject):
+    results = self.call_proc('reporting.get_pathology', { 'p_subject_bk': subject })
+
+    # Replace the underscores in the names of the attributes returned by the stored procedure with
+    # spaces for user friendliness. The names have underscores in the first place because this stored
+    # procedures unpivots table columns into rows of key-value pairs.
+    for r in results:
+      r['attr'] = r['attr'].replace('_',' ')
+
+    return results

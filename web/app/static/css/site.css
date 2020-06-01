@@ -82,6 +82,7 @@ footer {
   grid-row-end: -1;
 }
 
+/* tab code from https://css-tricks.com/functional-css-tabs-revisited/ */
 #tabs {
   position: relative;
   top: 20px;
@@ -130,35 +131,35 @@ footer {
   z-index: 1;
 }
 
-#info {
+footer table {
   z-index: -1;
   border-collapse: collapse;
 }
 
-#info th, #info td {
+footer table th, table td {
   padding: 4px 8px;
 }
 
-#info thead {
+footer table thead {
   text-align: left;
   font-size: 15px;
   color: #070707;
 }
 
-#info tbody {
+footer table tbody {
 }
 
-#info td {
+footer table td {
   font-size: 14px;
 }
 
-tr.highlighted {
+footer tr.highlighted {
   background: #8c8c8c;
   color: #fff;
   font-style: italic;
 }
 
-#info tfoot th {
+footer table tfoot th {
   background: #4f81bd;
   text-align: left;
   font-weight: normal;
