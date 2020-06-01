@@ -9,3 +9,4 @@ web/app/__pycache__
 *.swp
 *.svg
 __pycache__
+.pgpass

@@ -1,21 +1,31 @@
+--Author: Daniel Cotter
+--Date: 5/26/2020
+--Status: working properly
+--Purpose: Get pathology data for a given subject, unpivot the long list of columns into key-value pairs
+
 drop function if exists get_pathology(character varying)
 ;
 create or replace
 function reporting.get_pathology
 	(p_subject_bk varchar(100))
 returns table
-	(subject_bk	varchar(100)
-	,sample_bk	varchar(100)
-	,k			varchar(100)
-	,v			varchar(100))
+	(sample_bk	varchar(100)
+	,attr		varchar(100)
+	,value		varchar(100))
 language sql
 as
 $$
-select subject.subject_bk, sample.sample_bk, p.k, p.v
+--Purpose  : Return the pathology information by subject as key-value pairs,
+--           excluding columns with null values (which is most columns for
+--           most samples, but not in a predictable pattern).
+--Structure: Three inner joins, from subject to sample to pathology report,
+--           and then to an unpivoted version of the pathology report, followed
+--           by a *where* clause that drops the null-valued pathology attributes.
+select sample.sample_bk, p.k, p.v
 from reporting.subject
 join reporting.sample on sample.subject_pk = subject.subject_pk
 join reporting.pathology on pathology.sample_pk = sample.sample_pk
-join lateral(values --unpivot pathology columns and drop those that are null
+join lateral(values
 	('normal_tissue',pathology.normal_tissue::varchar(100)),
 	('polyp_type',pathology.polyp_type),
 	('architectural_distortion',pathology.architectural_distortion::varchar(100)),
