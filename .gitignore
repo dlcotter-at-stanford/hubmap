@@ -10,3 +10,5 @@ web/app/__pycache__
 *.svg
 __pycache__
 .pgpass
+*.cfg
+*.pyc

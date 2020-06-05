@@ -2,17 +2,17 @@ import sys
 from loguru import logger
 import psycopg2
 from psycopg2.extras import DictCursor
+import traceback
 
 class Database:
   """PostgreSQL Database class."""
 
-  #def __init__(self, config):
-  def __init__(self):
-    self.host     = '127.0.0.1'  # config.DATABASE_HOST
-    self.username = 'hubmap'     # config.DATABASE_USERNAME
-    self.password = 'hubmap'     # config.DATABASE_PASSWORD
-    self.port     = '5432'       # config.DATABASE_PORT
-    self.dbname   = 'hubmap'     # config.DATABASE_NAME
+  def __init__(self, config):
+    self.host     = config['DATABASE_HOST']
+    self.username = config['DATABASE_USERNAME']
+    self.password = config['DATABASE_PASSWORD']
+    self.port     = config['DATABASE_PORT']
+    self.dbname   = config['DATABASE_NAME']
     self.conn     = None
 
   def connect(self):
@@ -23,8 +23,6 @@ class Database:
       except psycopg2.DatabaseError as e:
         logger.error(e)
         sys.exit()
-      finally:
-        logger.info('Connection opened successfully.')
 
   def call_proc(self, proc, args):
     """Run a SQL query to select rows from table and return dictionarys."""

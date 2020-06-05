@@ -4,7 +4,7 @@ from flask import render_template, send_from_directory
 
 @app.route('/')
 def index():
-  subjects = Database().get_subjects_with_mapped_samples()
+  subjects = Database(app.config).get_subjects_with_mapped_samples()
 
   return render_template('index.html', title='Colon map visualization', subjects=subjects)
 
@@ -13,16 +13,16 @@ def map(subject):
   tables = {}
 
   tables['clinical'] = {}
-  tables['clinical']['data'] = Database().get_samples_with_coordinates(subject)
+  tables['clinical']['data'] = Database(app.config).get_samples_with_coordinates(subject)
   tables['clinical']['header'] = friendly_names(tables['clinical']['data'])
 
   tables['pathology'] = {}
-  tables['pathology']['data'] = Database().get_pathology_by_subject('A001')#subject)
+  tables['pathology']['data'] = Database(app.config).get_pathology_by_subject('A001')#subject)
   tables['pathology']['header'] = friendly_names(tables['pathology']['data'])
 
   # new data set:
   # tables['xxx'] = {}
-  # tables['xxx']['data'] = Database().get_xxx_by_subject(subject)
+  # tables['xxx']['data'] = Database(app.config).get_xxx_by_subject(subject)
   # tables['xxx']['header'] = friendly_names(tables['xxx']['data'])
   # * and add the data set to the parameters of render_template(...)
 
