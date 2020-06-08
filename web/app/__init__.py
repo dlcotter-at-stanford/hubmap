@@ -1,7 +1,8 @@
 import os
-from flask import Flask
+import waitress
+import flask
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 if 'FLASK_ENV' in os.environ:
     if os.environ['FLASK_ENV'] == 'dev':
@@ -11,4 +12,4 @@ if 'FLASK_ENV' in os.environ:
 
 from app import routes
 
-app.run(host='0.0.0.0')
+waitress.serve(app, host='0.0.0.0', port=5000)
