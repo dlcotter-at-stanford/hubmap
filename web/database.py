@@ -53,18 +53,6 @@ class Database:
     return self.call_proc('reporting.get_samples', { 'p_subject_bk': subject, 'has_coordinates': True })
 
   def get_pathology_by_subject(self, subject):
-    header, data = self.call_proc('reporting.get_pathology', { 'p_subject_bk': subject })
+    return header, data = self.call_proc('reporting.get_pathology', { 'p_subject_bk': subject })
 
-    # Replace the underscores in the names of the attributes returned by the
-    # stored procedure with spaces for user friendliness. The names have
-    # underscores in the first place because this stored procedures unpivots
-    # table columns, which don't allow spaces in their names, into rows of
-    # key-value pairs. Since the header is no longer a dictionary, we have to
-    # iterate through the list until we find the attributes column ('attr').
-    for i in range(len(header)):
-      if header[i] != 'attr':
-        continue
-      for row in data:
-        row[i] = row[i].replace('_',' ')
-
-    return header, data
+    

@@ -21,7 +21,7 @@ $$
 --Structure: Three inner joins, from subject to sample to pathology report,
 --           and then to an unpivoted version of the pathology report, followed
 --           by a *where* clause that drops the null-valued pathology attributes.
-select sample.sample_bk, p.k, p.v
+select sample.sample_bk, replace(p.k,'_',' '), p.v
 from reporting.subject
 join reporting.sample on sample.subject_pk = subject.subject_pk
 join reporting.pathology on pathology.sample_pk = sample.sample_pk
