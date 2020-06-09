@@ -53,6 +53,5 @@ class Database:
     return self.call_proc('reporting.get_samples', { 'p_subject_bk': subject, 'has_coordinates': True })
 
   def get_pathology_by_subject(self, subject):
-    return header, data = self.call_proc('reporting.get_pathology', { 'p_subject_bk': subject })
-
+    return self.call_proc('reporting.get_pathology', { 'p_subject_bk': subject })
     
