@@ -12,13 +12,15 @@ def index():
 def map(subject):
   tables = {}
 
+  header, data = Database(app.config).get_samples_with_coordinates(subject)
   tables['clinical'] = {}
-  tables['clinical']['data'] = Database(app.config).get_samples_with_coordinates(subject)
-  tables['clinical']['header'] = friendly_names(tables['clinical']['data'])
+  tables['clinical']['header'] = friendly_names(header)
+  tables['clinical']['data'] = data
 
+  header, data = Database(app.config).get_pathology_by_subject('A001')#subject)
   tables['pathology'] = {}
-  tables['pathology']['data'] = Database(app.config).get_pathology_by_subject('A001')#subject)
-  tables['pathology']['header'] = friendly_names(tables['pathology']['data'])
+  tables['pathology']['header'] = friendly_names(header)
+  tables['pathology']['data'] = data
 
   # new data set:
   # tables['xxx'] = {}
@@ -28,7 +30,7 @@ def map(subject):
 
   return render_template('map.html', title='Samples', subject=subject, tables=tables)
 
-def friendly_names(data_dict):
+def friendly_names(header):
   """ Purpose:  Translate internal database column names into more user-friendly equivalents
       Workings: The translation table is intended to function as a first pass for variable names
                 whose user-friendly name is not amenable to an generalized algorithmic transformation.
@@ -36,7 +38,7 @@ def friendly_names(data_dict):
                 for an underscore, which is many, the substitution is done in the else clause of the
                 list comprehension.
   """
-  if not data_dict:
+  if not header:
     return []
 
   translation_table = { 'subject_bk' : 'subject'
@@ -49,7 +51,7 @@ def friendly_names(data_dict):
                        ,'organ_piece': 'location'
                        ,'attr'       : 'attribute'}
   
-  return [ translation_table[key] if key in translation_table else key.replace('_',' ') for key in data_dict[0] ]
+  return [ translation_table[col] if col in translation_table else col.replace('_',' ') for col in header ]
 
 """
 Pie chart showing data size of different assays on HuBMAP data
