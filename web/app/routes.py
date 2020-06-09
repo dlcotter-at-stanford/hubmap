@@ -10,23 +10,18 @@ def index():
 
 @app.route('/map/<subject>')
 def map(subject):
+  datasets = { 'clinical' : Database(app.config).get_samples_with_coordinates(subject)
+              ,'pathology': Database(app.config).get_pathology_by_subject(subject) }
+  # to add new data set, just add the name and database call here and
+  # add the data set to the parameters of render_template(...)
+
   tables = {}
-
-  header, data = Database(app.config).get_samples_with_coordinates(subject)
-  tables['clinical'] = {}
-  tables['clinical']['header'] = friendly_names(header)
-  tables['clinical']['data'] = data
-
-  header, data = Database(app.config).get_pathology_by_subject('A001')#subject)
-  tables['pathology'] = {}
-  tables['pathology']['header'] = friendly_names(header)
-  tables['pathology']['data'] = data
-
-  # new data set:
-  # tables['xxx'] = {}
-  # tables['xxx']['data'] = Database(app.config).get_xxx_by_subject(subject)
-  # tables['xxx']['header'] = friendly_names(tables['xxx']['data'])
-  # * and add the data set to the parameters of render_template(...)
+  for name, dataset in datasets.items():
+    if dataset['data'] == []:
+      continue
+    tables[name] = {}
+    tables[name]['header'] = friendly_names(dataset['header'])
+    tables[name]['data'] = dataset['data']
 
   return render_template('map.html', title='Samples', subject=subject, tables=tables)
 

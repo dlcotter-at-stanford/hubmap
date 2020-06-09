@@ -44,7 +44,7 @@ class Database:
       # dictionaries, but in the end this seemed simpler.
       header = [ desc[0] for desc in cursor.description ]
       data = [ row for row in cursor.fetchall() ]
-      return header, data
+      return { 'header': header, 'data': data }
 
   def get_subjects_with_mapped_samples(self):
     return self.call_proc('reporting.get_subjects', { 'has_phi': False, 'has_coordinates': True })
