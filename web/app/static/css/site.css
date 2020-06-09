@@ -94,7 +94,6 @@ footer {
 
 .tab {
   float: left;
-  border-radius: 4px 4px 0 0;
 }
 
 .tab label {
@@ -104,6 +103,7 @@ footer {
   margin-left: -1px; 
   position: relative;
   left: 1px;
+  border-radius: 10px 10px 0 0;
 }
 
 .tab [type=radio] {
