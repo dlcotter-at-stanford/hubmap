@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
-export FLASK_ENV=dev
+# Remember to set the FLASK_ENV environment variable to either "dev" or "prd".
+# I was setting it in this script but took it out so that it wouldn't appear
+# to be constantly fluctuating in source commits.
 
 # I had been using dev.cfg and prd.cfg to control whether the app ran in debug
 # mode, but the app doesn't seem to pick up the values from there for some
@@ -8,15 +10,13 @@ export FLASK_ENV=dev
 # also lets me control whether the app runs in the foreground (for debugging)
 # or the background (for production).
 
-if [[ $FLASK_ENV=dev ]]
-then
+if [ "$FLASK_ENV" == "dev" ]; then
   export FLASK_CONFIG=../dev.cfg
   export FLASK_DEBUG=True
   python app.py
 fi
 
-if [[ $FLASK_ENV=prd ]]
-then
+if [ "$FLASK_ENV" == "prd" ]; then
   export FLASK_CONFIG=../prd.cfg
   export FLASK_DEBUG=False
   python app.py &
