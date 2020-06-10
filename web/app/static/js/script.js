@@ -110,10 +110,33 @@ window.onload = function() {
   }
 
   function updateImage() {
-    pins = document.querySelectorAll('svg#viz circle');
-    for (let i=0; i<pins.length; i++) {
-      pins[i].style.display = samples[i].visible ? 'inline' : 'none';
+    for (let i=0; i<samples.length; i++) {
+      var circle = document.createElement('circle');
+      circle.setAttribute('id', samples[i].id);
+      circle.setAttribute('tissue_type', samples[i].tissue_type);
+      circle.setAttribute('phenotype', samples[i].phenotype);
+      circle.setAttribute('location', samples[i].location);
+      circle.setAttribute('length', samples[i].length);
+      circle.setAttribute('width', samples[i].width);
+      circle.setAttribute('depth', samples[i].depth);
+      circle.setAttribute('cx', samples[i].x);
+      circle.setAttribute('cy', samples[i].y -150); // hack to put dots where they belong for A014
+      circle.setAttribute('r', (samples[i].length * samples[i].width * samples[i].depth) ** (1/3) );
+      circle.setAttribute('fill', 'gray');
+
+      var title = document.createElement('title');
+      title.innerHTML = `${ samples[i].id } \n (${ samples[i].x }, ${ samples[i].y }) \n ${ samples[i].length } x ${ samples[i].width } x ${ samples[i].depth } (${ (samples[i].length * samples[i].width * samples[i].depth) } mm³) \n ${ samples[i].tissue_type }, ${ samples[i].phenotype }, ${ samples[i].location }`;
+
+      circle.appendChild(title);
+      viz.appendChild(circle);
     }
+
+    circles = document.querySelectorAll('svg#viz circle');
+    for (let i=0; i<samples.length; i++) {
+      circles[i].style.display = samples[i].visible ? 'inline' : 'none';
+    }
+
+    document.getElementById('viz-wrapper').innerHTML += ""; // refresh
   }
 
   function drawDistance(sample_id) {
@@ -232,4 +255,5 @@ window.onload = function() {
   setVisibility();
   updateImage();
   updateTable();
+
 };

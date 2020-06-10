@@ -3,12 +3,12 @@ db/sample-tracker.tsv
 Session.vim
 web/scratch
 web/venv
-web/app/static/js/lib
 web/app/__pycache__
+web/app/static/js/lib
 *.tsv
 *.swp
-*.svg
 __pycache__
 .pgpass
 *.cfg
 *.pyc
+*.png
