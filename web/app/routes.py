@@ -1,20 +1,40 @@
 from app import app
-from database import Database
-from flask import render_template, send_from_directory
+import database
+import flask
 
 @app.route('/')
 def index():
-  subjects = Database(app.config).get_subjects_with_mapped_samples()
+  subjects = database.Database(app.config).get_subjects_with_mapped_samples()
 
-  return render_template('index.html', title='Colon map visualization', subjects=subjects)
+  return flask.render_template('index.html', title='Colon map visualization', subjects=subjects)
 
 @app.route('/map/<subject>')
 def map(subject):
-  datasets = { 'clinical' : Database(app.config).get_samples_with_coordinates(subject)
-              ,'pathology': Database(app.config).get_pathology_by_subject(subject) }
-  # to add new data set, just add the name and database call here and
-  # add the data set to the parameters of render_template(...)
+  # Determine whether the subject passed in through the URL is a valid subject.
+  # Rather than hardcoding the position of the relevant column, I am searching
+  # through all the columns and making a list of those with a matching name
+  # (there should only be one, but you never know), then looking through those
+  # columns for a subject matching the one passed in through the request. This
+  # is admittedly a bit complicated, but it is robust to changes in column ordering,
+  # and I will probably refactor it later into its own function in the Database
+  # class, since I believe I am doing something similar in another place.
+  subject_data = database.Database(app.config).get_subjects_with_mapped_samples()
+  id_column = [ index for index, item in enumerate(subject_data['header']) if item.lower() == 'subject_bk' ]
+  subjects = [ row[i] for row in subject_data['data'] for i in id_column ]
 
+  # Handle bad requests (i.e. non-existent subjects). Should probably be a 404
+  # but this is easier for now (hack).
+  if (subject not in subjects):
+    return flask.redirect('/')
+
+  # Get the data to be used in the web page. To add new data set, just add the
+  # name and database call here and add the data set to the parameters of
+  # render_template(...)
+  datasets = { 'clinical' : database.Database(app.config).get_samples_with_coordinates(subject)
+              ,'pathology': database.Database(app.config).get_pathology_by_subject(subject) }
+
+  # Prepare the data set to be passed to the template. It is possible to do this
+  # in a single-line list comprehension, but it's not nearly as legible that way.
   tables = {}
   for name, dataset in datasets.items():
     if dataset['data'] == []:
@@ -23,7 +43,7 @@ def map(subject):
     tables[name]['header'] = friendly_names(dataset['header'])
     tables[name]['data'] = dataset['data']
 
-  return render_template('map.html', title='Samples', subject=subject, tables=tables)
+  return flask.render_template('map.html', title='Samples', subject=subject, tables=tables)
 
 def friendly_names(header):
   """ Purpose:  Translate internal database column names into more user-friendly equivalents

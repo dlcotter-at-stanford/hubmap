@@ -4,11 +4,13 @@ create or replace
 function reporting.get_subjects
 	(has_phi boolean default false
 	,has_coordinates boolean default false)
-returns table (subject_bk varchar(100))
+returns table
+    (subject_bk     varchar(100)
+    ,disease_status varchar(100))
 language sql
 as
 $$
-select distinct subject_bk
+select distinct subject_bk, disease_status
 from reporting.subject
 join reporting.sample on sample.subject_pk = subject.subject_pk
 where

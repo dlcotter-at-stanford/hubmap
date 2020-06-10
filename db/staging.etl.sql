@@ -1,9 +1,13 @@
+--This script is meant to be called from the command line:
+--psql -h localhost -U postgres -d hubmap -f staging.etl.sql
+
 --load sample tracker tab-separated flat file into staging table first
 truncate table staging.sample_tracker_stg
 ;
 --set up paths for different files
 --The backticks in the first "set" command let us use the output of a shell command to set the path
---variable, which helps make the script portable between dev and prod environments.
+--variable, which helps make the script portable between dev and prod environments. The variable is
+--read with the colon operator, and concatenation with the file name happens automatically.
 \set pwd `pwd`
 \set sample_tracker_path :pwd '/sample-tracker.tsv'
 \set sample_coords_path  :pwd '/sample-coords.tsv'
