@@ -369,3 +369,94 @@ select
 	,nullif(nullif(additional_details_comments,'na'),'n/a')
 from staging.pathology
 join reporting.sample on sample.sample_bk = pathology.sample
+;
+--ATAC-seq bulk metadata
+truncate table reporting.atacseq_bulk_metadata
+;
+insert into reporting.atacseq_bulk_metadata
+  (sample_bk
+  ,hubmap_subject_bk
+  ,hubmap_tissue_bk
+  ,execution_datetime
+  ,protocols_io_doi
+  ,operator
+  ,operator_email
+  ,pi
+  ,pi_email
+  ,assay_category
+  ,assay_type
+  ,analyte_class
+  ,is_targeted
+  ,acquisition_instrument_vendor
+  ,acquisition_instrument_model
+  ,is_technical_replicate
+  ,library_id
+  ,bulk_atac_cell_isolation_protocols_io_doi
+  ,nuclei_quality_metric
+  ,bulk_transposition_input_number_nuclei
+  ,transposition_method
+  ,transposition_transposase_source
+  ,transposition_kit_number
+  ,library_construction_protocols_io_doi
+  ,library_layout
+  ,library_adapter_sequence
+  ,library_pcr_cycles
+  ,library_average_fragment_size
+  ,library_creation_date
+  ,sequencing_reagent_kit
+  ,sequencing_read_format
+  ,sequencing_read_percent_q30
+  ,sequencing_phix_percent
+  ,library_final_yield_value
+  ,library_final_yield_units
+  ,library_preparation_kit
+  ,library_concentration_value
+  ,library_concentration_unit
+  ,metadata_path
+  ,data_path
+  ,fastq_file_size)
+select
+   --sample.sample_pk
+  sample_bk
+  ,hubmap_subject_bk
+  ,hubmap_tissue_bk
+  ,execution_datetime::timestamp
+  ,protocols_io_doi
+  ,operator
+  ,operator_email
+  ,pi
+  ,pi_email
+  ,assay_category
+  ,assay_type
+  ,analyte_class
+  ,is_targeted::boolean
+  ,acquisition_instrument_vendor
+  ,acquisition_instrument_model
+  ,is_technical_replicate::boolean
+  ,library_id
+  ,bulk_atac_cell_isolation_protocols_io_doi
+  ,nuclei_quality_metric
+  ,bulk_transposition_input_number_nuclei::integer
+  ,transposition_method
+  ,transposition_transposase_source
+  ,transposition_kit_number::integer
+  ,library_construction_protocols_io_doi
+  ,library_layout
+  ,library_adapter_sequence
+  ,library_pcr_cycles::integer
+  ,library_average_fragment_size::numeric(7,3)
+  ,library_creation_date::date
+  ,sequencing_reagent_kit
+  ,sequencing_read_format
+  ,sequencing_read_percent_q30::numeric(7,3)
+  ,sequencing_phix_percent::numeric(7,3)
+  ,library_final_yield_value::numeric(7,3)
+  ,library_final_yield_units
+  ,library_preparation_kit
+  ,library_concentration_value::numeric(7,3)
+  ,library_concentration_unit
+  ,metadata_path
+  ,data_path
+  ,fastq_file_size
+from staging.atacseq_bulk_metadata
+join reporting.sample on sample.sample_bk = atacseq_bulk_metadata.sample_bk

@@ -19,24 +19,6 @@ grant role_readonly to grp_readonly;
 
 --user
 create role hubmap with login;
---alter role hubmap with password 'somepassword';  # set this manually since this file is in the Git repo
+--alter role hubmap with password 'somepassword';  # set the password manually since this file will be included in the Git repo
 alter role hubmap valid until 'infinity';
 grant grp_readonly to hubmap;
-
---drop role if exists hubmap
---;
---create role hubmap with password 'hubmap' with login
---;
---grant usage on schema reporting to hubmap
---;
---grant select on table reporting.assay to hubmap
---;
---grant select on table reporting.pathology to hubmap
---;
---grant select on table reporting.sample to hubmap
---;
---grant select on table reporting."storage" to hubmap
---;
---grant select on table reporting.subject to hubmap
---;
-

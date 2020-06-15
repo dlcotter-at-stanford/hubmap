@@ -9,9 +9,12 @@ truncate table staging.sample_tracker_stg
 --variable, which helps make the script portable between dev and prod environments. The variable is
 --read with the colon operator, and concatenation with the file name happens automatically.
 \set pwd `pwd`
-\set sample_tracker_path :pwd '/sample-tracker.tsv'
-\set sample_coords_path  :pwd '/sample-coords.tsv'
-\set pathology_path      :pwd '/pathology.tsv'
+\set sample_tracker_path        :pwd '/sample-tracker.tsv'
+\set sample_coords_path         :pwd '/sample-coords.tsv'
+\set pathology_path             :pwd '/pathology.tsv'
+\set atacseq_bulk_metadata_path :pwd '/metadata.tsv'
+--'/assay-metadata/atacseq/bulk-hiseq/metadata.tsv'
+--/Users/dlcott2/Documents/work/HuBMAP/dev/data-portal/db/assay-metadata/atacseq/bulk-hiseq/metadata.tsv
 ;
 copy staging.sample_tracker_stg
 from :'sample_tracker_path'
@@ -47,3 +50,11 @@ csv header --ignore header
 ;
 -- delete example row
 delete from staging.pathology where sample = 'Examples of Responses'
+;
+
+--load ATAC-seq metadata
+copy staging.atacseq_bulk_metadata
+from :'atacseq_bulk_metadata_path'
+with delimiter E'\t' --tab separator
+csv header --ignore header
+

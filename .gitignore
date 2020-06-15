@@ -12,3 +12,4 @@ __pycache__
 *.cfg
 *.pyc
 *.png
+*.xlsx
