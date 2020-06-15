@@ -6,7 +6,7 @@
 drop function if exists get_pathology(character varying)
 ;
 create or replace
-function reporting.get_pathology
+function core.get_pathology
 	(p_subject_bk varchar(100))
 returns table
 	(sample_bk	varchar(100)
@@ -22,9 +22,9 @@ $$
 --           and then to an unpivoted version of the pathology report, followed
 --           by a *where* clause that drops the null-valued pathology attributes.
 select sample.sample_bk, replace(p.k,'_',' '), p.v
-from reporting.subject
-join reporting.sample on sample.subject_pk = subject.subject_pk
-join reporting.pathology on pathology.sample_pk = sample.sample_pk
+from core.subject
+join core.sample on sample.subject_pk = subject.subject_pk
+join core.pathology on pathology.sample_pk = sample.sample_pk
 join lateral(values
 	('normal_tissue',pathology.normal_tissue::varchar(100)),
 	('polyp_type',pathology.polyp_type),

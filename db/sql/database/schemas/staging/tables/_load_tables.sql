@@ -1,5 +1,5 @@
 --This script is meant to be called from the command line:
---psql -h localhost -U postgres -d hubmap -f staging.etl.sql
+--psql -h localhost -U postgres -d hubmap -f load_tables.sql
 
 --load sample tracker tab-separated flat file into staging table first
 truncate table staging.sample_tracker_stg
@@ -8,13 +8,9 @@ truncate table staging.sample_tracker_stg
 --The backticks in the first "set" command let us use the output of a shell command to set the path
 --variable, which helps make the script portable between dev and prod environments. The variable is
 --read with the colon operator, and concatenation with the file name happens automatically.
-\set pwd `pwd`
-\set sample_tracker_path        :pwd '/sample-tracker.tsv'
-\set sample_coords_path         :pwd '/sample-coords.tsv'
-\set pathology_path             :pwd '/pathology.tsv'
-\set atacseq_bulk_metadata_path :pwd '/metadata.tsv'
---'/assay-metadata/atacseq/bulk-hiseq/metadata.tsv'
---/Users/dlcott2/Documents/work/HuBMAP/dev/data-portal/db/assay-metadata/atacseq/bulk-hiseq/metadata.tsv
+\set sample_tracker_path        :data_dir '/sample-tracker.tsv'
+\set sample_coords_path         :data_dir '/sample-coords.tsv'
+\set pathology_path             :data_dir '/pathology.tsv'
 ;
 copy staging.sample_tracker_stg
 from :'sample_tracker_path'
@@ -51,10 +47,4 @@ csv header --ignore header
 -- delete example row
 delete from staging.pathology where sample = 'Examples of Responses'
 ;
-
---load ATAC-seq metadata
-copy staging.atacseq_bulk_metadata
-from :'atacseq_bulk_metadata_path'
-with delimiter E'\t' --tab separator
-csv header --ignore header
 

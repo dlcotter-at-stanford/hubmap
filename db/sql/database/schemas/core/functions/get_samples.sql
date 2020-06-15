@@ -1,7 +1,7 @@
 drop function if exists get_samples(character varying)
 ;
 create or replace
-function reporting.get_samples
+function core.get_samples
 	(p_subject_bk varchar(100)
 	,has_coordinates boolean default false)
 returns table
@@ -18,8 +18,8 @@ language sql
 as
 $$
 select sample_bk, size_length, size_width, size_depth, x_coord, y_coord, stage, phenotype, organ_piece
-from reporting.sample
-join reporting.subject on subject.subject_pk = sample.subject_pk
+from core.sample
+join core.subject on subject.subject_pk = sample.subject_pk
 where subject.subject_bk = p_subject_bk
 and
 	 --get all records without regard to presence of coordinates

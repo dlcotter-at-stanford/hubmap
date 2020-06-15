@@ -1,7 +1,7 @@
 drop function if exists get_subjects(character varying)
 ;
 create or replace
-function reporting.get_subjects
+function core.get_subjects
 	(has_phi boolean default false
 	,has_coordinates boolean default false)
 returns table
@@ -11,8 +11,8 @@ language sql
 as
 $$
 select distinct subject_bk, disease_status
-from reporting.subject
-join reporting.sample on sample.subject_pk = subject.subject_pk
+from core.subject
+join core.sample on sample.subject_pk = subject.subject_pk
 where
 	 --get all records without regard to PHI
 	(has_phi is null

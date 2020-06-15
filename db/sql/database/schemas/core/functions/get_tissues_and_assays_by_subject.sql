@@ -1,7 +1,7 @@
 drop function if exists get_tissues_and_assays_by_subject(character varying)
 ;
 create or replace
-function reporting.get_tissues_and_assays_by_subject
+function core.get_tissues_and_assays_by_subject
 	(p_subject_bk varchar(100)
 	,has_coordinates boolean default false)
 returns table
@@ -17,10 +17,10 @@ language sql
 as
 $$
 select tissue_bk, init_pres_mthd, curr_pres_mthd, assay_type, perf_date, researcher, equipment, seq_depth
-from reporting.subject 
-join reporting.sample on subject.subject_pk = sample.subject_pk
-join reporting.tissue on sample.sample_pk = tissue.sample_pk
-left join reporting.assay on tissue.tissue_pk = assay.tissue_pk
+from core.subject 
+join core.sample on subject.subject_pk = sample.subject_pk
+join core.tissue on sample.sample_pk = tissue.sample_pk
+left join core.assay on tissue.tissue_pk = assay.tissue_pk
 where subject.subject_bk = p_subject_bk
 and
 	 --get all records without regard to presence of coordinates
