@@ -4,7 +4,11 @@
 source config.sh
 
 # Fetch frequently changing data from live sources
-curl $SAMPLE_TRACKER_URL > $DATA_DIR/sample-tracker.tsv
+if [ $DOWNLOAD_SAMPLE_TRACKER -eq 1 ]; then
+  curl $SAMPLE_TRACKER_URL > $DATA_DIR/sample-tracker.tsv
+else
+  echo "Using cached copy of sample tracker"
+fi
 
 # Scrub PHI
 # zsh doesn't do word splitting, hence the slightly unorthodox use of eval below
@@ -65,6 +69,6 @@ psql -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/meta
 psql -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/tables/proteomics.sql
 psql -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/tables/rnaseq_bulk.sql
 psql -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/tables/rnaseq_single_nucleus.sql
-psql -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/tables/wgs.sql
+psql -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/tables/whole_genome_seq.sql
 psql -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/tables/_load_tables.sql -v data_dir="$DATA_DIR"
 
