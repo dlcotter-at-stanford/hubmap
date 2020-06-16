@@ -1,0 +1,88 @@
+insert into metadata.atacseq_bulk_hiseq
+(sample_pk
+,sample_id
+,donor_id
+,tissue_id
+,execution_datetime
+,protocols_io_doi
+,operator
+,operator_email
+,pi
+,pi_email
+,assay_category
+,assay_type
+,analyte_class
+,is_targeted
+,acquisition_instrument_vendor
+,acquisition_instrument_model
+,is_technical_replicate
+,library_id
+,bulk_atac_cell_isolation_protocols_io_doi
+,nuclei_quality_metric
+,bulk_transposition_input_number_nuclei
+,transposition_method
+,transposition_transposase_source
+,transposition_kit_number  --not really a number; more of an operational key
+,library_construction_protocols_io_doi
+,library_layout
+,library_adapter_sequence
+,library_pcr_cycles
+,library_average_fragment_size
+,library_creation_date
+,sequencing_reagent_kit
+,sequencing_read_format
+,sequencing_read_percent_q30
+,sequencing_phix_percent
+,library_final_yield_value
+,library_final_yield_units
+,library_preparation_kit
+,library_concentration_value
+,library_concentration_unit
+,metadata_path
+,data_path
+,fastqfilesize)
+select
+   sample.sample_pk
+  ,substring(sample_id,1,position('_' in sample_id)-1)
+  ,donor_id
+  ,tissue_id
+  ,execution_datetime::timestamp
+  ,protocols_io_doi
+  ,operator
+  ,operator_email
+  ,pi
+  ,pi_email
+  ,assay_category
+  ,assay_type
+  ,analyte_class
+  ,is_targeted::boolean
+  ,acquisition_instrument_vendor
+  ,acquisition_instrument_model
+  ,is_technical_replicate::boolean
+  ,library_id
+  ,bulk_atac_cell_isolation_protocols_io_doi
+  ,nuclei_quality_metric
+  ,bulk_transposition_input_number_nuclei::integer
+  ,transposition_method
+  ,transposition_transposase_source
+  ,transposition_kit_number  --not really a number; more of an operational key
+  ,library_construction_protocols_io_doi
+  ,library_layout
+  ,library_adapter_sequence
+  ,library_pcr_cycles::integer
+  ,library_average_fragment_size::numeric(7,3)
+  ,library_creation_date::timestamp
+  ,sequencing_reagent_kit
+  ,sequencing_read_format
+  ,sequencing_read_percent_q30::numeric(7,3)
+  ,sequencing_phix_percent::numeric(7,3)
+  ,library_final_yield_value::numeric(7,3)
+  ,library_final_yield_units
+  ,library_preparation_kit
+  ,library_concentration_value::numeric(7,3)
+  ,library_concentration_unit
+  ,metadata_path
+  ,data_path
+  ,fastqfilesize::numeric(7,3)
+from staging.metadata_atacseq_bulk_hiseq
+join core.sample on sample.sample_bk = substring(sample_id,1,position('_' in sample_id)-1)

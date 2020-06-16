@@ -1,16 +1,10 @@
---This script is meant to be called from the command line:
---psql -h localhost -U postgres -d hubmap -f load_tables.sql
+--This script is expecting the "data_dir" parameter to be passed in from the
+--command line, i.e. db/scripts/build-database.sh
 
+\set sample_tracker_path :data_dir '/sample-tracker.tsv'
+;
 --load sample tracker tab-separated flat file into staging table first
 truncate table staging.sample_tracker_stg
-;
---set up paths for different files
---The backticks in the first "set" command let us use the output of a shell command to set the path
---variable, which helps make the script portable between dev and prod environments. The variable is
---read with the colon operator, and concatenation with the file name happens automatically.
-\set sample_tracker_path        :data_dir '/sample-tracker.tsv'
-\set sample_coords_path         :data_dir '/sample-coords.tsv'
-\set pathology_path             :data_dir '/pathology.tsv'
 ;
 copy staging.sample_tracker_stg
 from :'sample_tracker_path'
@@ -28,6 +22,8 @@ from staging.sample_tracker_stg
 ;
 
 --load sample coordinates tab-separated flat file into staging table first
+\set sample_coords_path  :data_dir '/sample-coords.tsv'
+;
 truncate table staging.sample_coordinates
 ;
 copy staging.sample_coordinates
@@ -37,6 +33,8 @@ csv header --ignore header
 ;
 
 --load pathology tab-separated flat file into staging table first
+\set pathology_path      :data_dir '/pathology.tsv'
+;
 truncate table staging.pathology
 ;
 copy staging.pathology
@@ -48,3 +46,11 @@ csv header --ignore header
 delete from staging.pathology where sample = 'Examples of Responses'
 ;
 
+--load metadata
+\set metadata_atacseq_bulk_path :data_dir '/assay-metadata/atacseq/bulk-hiseq/metadata.tsv'
+;
+copy staging.metadata_atacseq_bulk_hiseq
+from :'metadata_atacseq_bulk_path'
+with delimiter E'\t' --tab separator
+csv header --ignore header
+;
