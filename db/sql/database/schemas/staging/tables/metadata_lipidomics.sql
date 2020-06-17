@@ -14,8 +14,6 @@ create table staging.metadata_lipidomics
 ,is_targeted varchar(100)
 ,acquisition_instrument_vendor varchar(100)
 ,acquisition_instrument_model varchar(100)
-,metadata_path varchar(100)
-,data_path varchar(100)
 ,ms_source varchar(100)
 ,polarity varchar(100)
 ,mass_range_low_value varchar(100)
@@ -43,5 +41,7 @@ create table staging.metadata_lipidomics
 ,lc_mobile_phase_b varchar(100)
 ,processing_search varchar(100)
 ,processing_protocols_io_doi varchar(100)
-,overall_protocols_io_doi varchar(100))
+,overall_protocols_io_doi varchar(100)
+,metadata_path varchar(100)
+,data_path varchar(100))
 ;

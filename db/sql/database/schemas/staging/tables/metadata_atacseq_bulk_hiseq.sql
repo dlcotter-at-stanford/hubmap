@@ -41,3 +41,10 @@ create table staging.metadata_atacseq_bulk_hiseq
 ,data_path varchar(100)
 ,fastqfilesize varchar(100))
 ;
+--"sample_id" is a misnomer: this is really a duplicate of the "library ID" or
+--"technical replicate ID" in column "library_id". The data has a format of,
+--e.g. "B001-A-401_A", so it does include the internal sample ID, albeit with
+--an "_A" or "_B" tag. I am including this column in order not to have to
+--manually drop its column from the metadata.tsv file and because the portion of
+--it up to the underscore is used to join to core.sample for the foreign key
+--reference when the tables are loaded.

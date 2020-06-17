@@ -1,9 +1,8 @@
 create table metadata.atacseq_bulk_hiseq
-(metadata_pk serial not null
-,sample_pk integer
-,sample_id varchar(100)
-,donor_id varchar(100)
-,tissue_id varchar(100)
+(metadata_pk serial primary key
+,sample_pk integer references core.sample(sample_pk)
+,hubmap_donor_id varchar(100)
+,hubmap_tissue_id varchar(100)
 ,execution_datetime timestamp
 ,protocols_io_doi varchar(100)
 ,operator varchar(100)
@@ -28,19 +27,18 @@ create table metadata.atacseq_bulk_hiseq
 ,library_layout varchar(100)
 ,library_adapter_sequence varchar(200)
 ,library_pcr_cycles integer
-,library_average_fragment_size numeric(7,3)
+,library_average_fragment_size numeric(10,2)
 ,library_creation_date timestamp
 ,sequencing_reagent_kit varchar(100)
 ,sequencing_read_format varchar(100)
-,sequencing_read_percent_q30 numeric(7,3)
-,sequencing_phix_percent numeric(7,3)
-,library_final_yield_value numeric(7,3)
+,sequencing_read_percent_q30 numeric(10,2)
+,sequencing_phix_percent numeric(10,2)
+,library_final_yield_value numeric(10,2)
 ,library_final_yield_units varchar(100)
 ,library_preparation_kit varchar(100)
-,library_concentration_value numeric(7,3)
+,library_concentration_value numeric(10,2)
 ,library_concentration_unit varchar(100)
 ,metadata_path varchar(100)
 ,data_path varchar(100)
-,fastqfilesize numeric(7,3)
-,constraint sample_pkey primary key (metadata_pk))
+,fastqfilesize numeric(10,2))
 ;

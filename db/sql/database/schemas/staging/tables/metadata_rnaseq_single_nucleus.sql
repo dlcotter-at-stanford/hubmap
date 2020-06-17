@@ -14,8 +14,6 @@ create table staging.metadata_rnaseq_single_nucleus
 ,is_targeted varchar(100)
 ,acquisition_instrument_vendor varchar(100)
 ,acquisition_instrument_model varchar(100)
-,metadata_path varchar(100)
-,data_path varchar(100)
 ,sc_isolation_protocols_io_doi varchar(100)
 ,sc_isolation_entity varchar(100)
 ,sc_isolation_tissue_dissociation varchar(100)
@@ -37,5 +35,7 @@ create table staging.metadata_rnaseq_single_nucleus
 ,sequencing_reagent_kit varchar(100)
 ,sequencing_read_format varchar(100)
 ,sequencing_read_percent_q30 varchar(100)
-,sequencing_phix_percent varchar(100))
+,sequencing_phix_percent varchar(100)
+,metadata_path varchar(100)
+,data_path varchar(100))
 ;
