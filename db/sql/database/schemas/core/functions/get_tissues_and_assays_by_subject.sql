@@ -1,5 +1,3 @@
-drop function if exists get_tissues_and_assays_by_subject(character varying)
-;
 create or replace
 function core.get_tissues_and_assays_by_subject
 	(p_subject_bk varchar(100)

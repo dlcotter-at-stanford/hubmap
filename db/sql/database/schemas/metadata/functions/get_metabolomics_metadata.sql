@@ -1,4 +1,4 @@
-create or replace function metadata.get_metabolomics_metadata(p_sample_bk varchar(100))
+create or replace function metadata.get_metabolomics_metadata(p_subject_bk varchar(100), p_sample_bk varchar(100))
 returns table
 	(sample_bk varchar(100)
 	,hubmap_donor_id varchar(100)
@@ -95,6 +95,8 @@ as $$
     ,data_path
   from metadata.metabolomics md
   join core.sample on sample.sample_pk = md.sample_pk
-  where sample.sample_bk = p_sample_bk
+  join core.subject on subject.subject_pk = sample.subject_pk
+  where (p_subject_bk is null or subject.subject_bk = p_subject_bk)
+  and (p_sample_bk is null or sample.sample_bk = p_sample_bk)
 $$
 

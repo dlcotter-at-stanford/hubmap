@@ -3,6 +3,13 @@
 # Run untracked config script to set environment variables, download data, scrub PHI, etc.
 source config.sh
 
+# The above line requires that this script be called from within the same
+# directory as config.sh, which is not always convenient. I found a solution
+# on Stack Overflow for Bash, which doesn't work for zsh, but may be adaptable:
+# DIR="$( cd "$( dirname "${ZSH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# echo $DIR
+# exit
+
 # Fetch frequently changing data from live sources
 if [ $DOWNLOAD_SAMPLE_TRACKER -eq 1 ]; then
   curl $SAMPLE_TRACKER_URL > $DATA_DIR/sample-tracker.tsv
@@ -54,7 +61,6 @@ psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/c
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/core/tables/assay.sql
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/core/tables/storage.sql
 #psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_tissues_and_assays_by_subject.sql
-#psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_atacseq_bulk_metadata.sql
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_samples.sql
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_subjects.sql
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_pathology.sql
@@ -81,3 +87,7 @@ psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/m
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/functions/get_metabolomics_metadata.sql
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/functions/get_rnaseq_single_nucleus_metadata.sql
 psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/functions/get_atacseq_single_nucleus_metadata.sql
+
+# Security settings
+psql -q -h localhost -d hubmap   -U postgres -f $BASE_DIR/sql/database/roles/role.sql
+

@@ -1,5 +1,3 @@
-drop function if exists get_samples(character varying)
-;
 create or replace
 function core.get_samples
 	(p_subject_bk varchar(100)

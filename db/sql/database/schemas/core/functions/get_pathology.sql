@@ -3,8 +3,6 @@
 --Status: working properly
 --Purpose: Get pathology data for a given subject, unpivot the long list of columns into key-value pairs
 
-drop function if exists get_pathology(character varying)
-;
 create or replace
 function core.get_pathology
 	(p_subject_bk varchar(100))

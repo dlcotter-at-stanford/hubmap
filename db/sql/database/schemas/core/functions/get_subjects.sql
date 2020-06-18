@@ -1,5 +1,3 @@
-drop function if exists get_subjects(character varying)
-;
 create or replace
 function core.get_subjects
 	(has_phi boolean default false
