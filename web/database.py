@@ -7,12 +7,21 @@ import traceback
 class Database:
   """PostgreSQL Database class."""
 
-  def __init__(self, config):
-    self.host     = config['DATABASE_HOST']
-    self.username = config['DATABASE_USERNAME']
-    self.password = config['DATABASE_PASSWORD']
-    self.port     = config['DATABASE_PORT']
-    self.dbname   = config['DATABASE_NAME']
+  def __init__(self, config = None):
+    # This code provides some local, not-very-secure database defaults for testing.
+    # Obviously, do not use these user IDs & passwords for production databases.
+    if config is None:
+      self.host     = 'localhost'
+      self.port     =  5432
+      self.dbname   = 'hubmap'
+      self.username = 'hubmap'
+      self.password = 'hubmap'
+    else:
+      self.host     = config['DATABASE_HOST']
+      self.port     = config['DATABASE_PORT']
+      self.dbname   = config['DATABASE_NAME']
+      self.username = config['DATABASE_USERNAME']
+      self.password = config['DATABASE_PASSWORD']
     self.conn     = None
 
   def connect(self):
@@ -47,11 +56,17 @@ class Database:
       return { 'header': header, 'data': data }
 
   def get_subjects_with_mapped_samples(self):
-    return self.call_proc('reporting.get_subjects', { 'has_phi': False, 'has_coordinates': True })
+    return self.call_proc('core.get_subjects', { 'has_phi': False, 'has_coordinates': True })
 
   def get_samples_with_coordinates(self, subject):
-    return self.call_proc('reporting.get_samples', { 'p_subject_bk': subject, 'has_coordinates': True })
+    return self.call_proc('core.get_samples', { 'p_subject_bk': subject, 'has_coordinates': True })
 
   def get_pathology_by_subject(self, subject):
-    return self.call_proc('reporting.get_pathology', { 'p_subject_bk': subject })
+    return self.call_proc('core.get_pathology', { 'p_subject_bk': subject })
     
+  def get_metadata(self, metadata_type, subject, sample):
+    # Not sure this is the right way to raise this error, but at least *something* will happen if the metadata type isn't supported
+    if metadata_type not in ['atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics', 'metabolomics', 'proteomics', 'rnaseq_bulk', 'rnaseq_single_nucleus', 'whole_genome_seq' ]:
+      raise
+    else:
+      return self.call_proc('metadata.get_' + metadata_type + '_metadata', { 'p_subject_bk': subject, 'p_sample_bk': sample })

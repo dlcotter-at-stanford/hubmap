@@ -19,6 +19,12 @@ def map(subject):
   # and I will probably refactor it later into its own function in the Database
   # class, since I believe I am doing something similar in another place.
   subject_data = database.Database(app.config).get_subjects_with_mapped_samples()
+
+  # If there are no subjects found, redirect rather than getting awkward "can't
+  # subscript None" error (shouldn't happen ever really, but cropped up in test)
+  if subject_data is None:
+    return flask.redirect('/')
+
   id_column = [ index for index, item in enumerate(subject_data['header']) if item.lower() == 'subject_bk' ]
   subjects = [ row[i] for row in subject_data['data'] for i in id_column ]
 
@@ -30,8 +36,16 @@ def map(subject):
   # Get the data to be used in the web page. To add new data set, just add the
   # name and database call here and add the data set to the parameters of
   # render_template(...)
-  datasets = { 'clinical' : database.Database(app.config).get_samples_with_coordinates(subject)
-              ,'pathology': database.Database(app.config).get_pathology_by_subject(subject) }
+  datasets = { 'clinical'                       : database.Database(app.config).get_samples_with_coordinates(subject)
+              ,'pathology'                      : database.Database(app.config).get_pathology_by_subject(subject) 
+              ,'metadata.atacseq_bulk_hiseq'    : database.Database(app.config).get_metadata('atacseq_bulk_hiseq'    , subject, None) 
+              ,'metadata.atacseq_single_nucleus': database.Database(app.config).get_metadata('atacseq_single_nucleus', subject, None) 
+              ,'metadata.lipidomics'            : database.Database(app.config).get_metadata('lipidomics'            , subject, None) 
+              ,'metadata.metabolomics'          : database.Database(app.config).get_metadata('metabolomics'          , subject, None) 
+              ,'metadata.proteomics'            : database.Database(app.config).get_metadata('proteomics'            , subject, None) 
+              ,'metadata.rnaseq_bulk'           : database.Database(app.config).get_metadata('rnaseq_bulk'           , subject, None) 
+              ,'metadata.rnaseq_single_nucleus' : database.Database(app.config).get_metadata('rnaseq_single_nucleus' , subject, None) 
+              ,'metadata.whole_genome_seq'      : database.Database(app.config).get_metadata('whole_genome_seq'      , subject, None) }
 
   # Prepare the data set to be passed to the template. It is possible to do this
   # in a single-line list comprehension, but it's not nearly as legible that way.

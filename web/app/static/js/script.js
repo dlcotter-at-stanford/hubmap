@@ -210,50 +210,51 @@ window.onload = function() {
     document.body.removeChild(element);
   }
 
-  // EVENT HANDLING
-  pins = document.querySelectorAll('svg#viz circle');
-  for (let i=0; i<pins.length; i++) {
-    pins[i].addEventListener('mouseover', (function(id) {
-      return function(e) {
-        drawDistance(id);
-      };
-    })(pins[i].getAttribute('id'))); /*(1)*/
+  function attachEvents() {
+    pins = document.querySelectorAll('svg#viz circle');
+    for (let i=0; i<pins.length; i++) {
+      pins[i].addEventListener('mouseover', (function(id) {
+        return function(e) {
+          drawDistance(id);
+        };
+      })(pins[i].getAttribute('id'))); /*(1)*/
 
-    pins[i].addEventListener('mouseover', (function(id) {
-      return function(e) {
-        highlightRow(id);
-      };
-    })(pins[i].getAttribute('id'))); /*(1)*/
+      pins[i].addEventListener('mouseover', (function(id) {
+        return function(e) {
+          highlightRow(id);
+        };
+      })(pins[i].getAttribute('id'))); /*(1)*/
 
-    // (1) Both these event listeners use a combination of an "immediately invoked function
-    //     expression" (i.e. an IIFE, i.e. an "iffy") and a closure to return an anonymous
-    //     function that captures the id of the element that caused it to be called. This is
-    //     important because the the event object passed to the handling function does not
-    //     contain any information about the object that caused it to fire; thus if we did not
-    //     bundle this information in the function assigned to the event, the function would have
-    //     have no way of knowing which element it should (in this case) highlight.
-  }
+      // (1) Both these event listeners use a combination of an "immediately invoked function
+      //     expression" (i.e. an IIFE, i.e. an "iffy") and a closure to return an anonymous
+      //     function that captures the id of the element that caused it to be called. This is
+      //     important because the the event object passed to the handling function does not
+      //     contain any information about the object that caused it to fire; thus if we did not
+      //     bundle this information in the function assigned to the event, the function would have
+      //     have no way of knowing which element it should (in this case) highlight.
+    }
 
-  checkboxes = document.querySelectorAll('input[type="checkbox"]');
-  for (let i=0; i<checkboxes.length; i++) {
-    checkboxes[i].addEventListener('click', setVisibility);
-    checkboxes[i].addEventListener('click', updateImage);
-    checkboxes[i].addEventListener('click', updateTable);
-    checkboxes[i].addEventListener('click', drawDistance);
-  }
+    checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    for (let i=0; i<checkboxes.length; i++) {
+      checkboxes[i].addEventListener('click', setVisibility);
+      checkboxes[i].addEventListener('click', updateImage);
+      checkboxes[i].addEventListener('click', updateTable);
+      checkboxes[i].addEventListener('click', drawDistance);
+    }
 
-  csv_links = document.querySelectorAll('footer .tab label a.download-link');
-  for (let i=0; i<csv_links.length; i++) {
-    csv_links[i].addEventListener('click', (function(id) {
-      return function(e) {
-        downloadCSV(id);
-      };
-    })(csv_links[i].getAttribute('table_id')));
+    csv_links = document.querySelectorAll('footer .tab label a.download-link');
+    for (let i=0; i<csv_links.length; i++) {
+      csv_links[i].addEventListener('click', (function(id) {
+        return function(e) {
+          downloadCSV(id);
+        };
+      })(csv_links[i].getAttribute('table_id')));
+    }
   }
 
   // PAGE LOAD
   setVisibility();
   updateImage();
   updateTable();
-
+  attachEvents();
 };
