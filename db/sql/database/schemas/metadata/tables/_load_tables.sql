@@ -3,8 +3,8 @@ truncate table metadata.atacseq_bulk_hiseq
 ;
 insert into metadata.atacseq_bulk_hiseq
   (sample_pk
-  ,hubmap_donor_id
-  ,hubmap_tissue_id
+  ,study_donor_id
+  ,study_tissue_id
   ,execution_datetime
   ,protocols_io_doi
   ,operator
@@ -94,8 +94,8 @@ truncate table metadata.atacseq_single_nucleus
 ;
 insert into metadata.atacseq_single_nucleus
   (sample_pk 
-  ,hubmap_donor_id 
-  ,hubmap_tissue_id 
+  ,study_donor_id 
+  ,study_tissue_id 
   ,execution_datetime
   ,protocols_io_doi 
   ,operator 
@@ -193,8 +193,8 @@ truncate table metadata.lipidomics
 ;
 insert into metadata.lipidomics
   (sample_pk
-  ,hubmap_donor_id
-  ,hubmap_tissue_id
+  ,study_donor_id
+  ,study_tissue_id
   ,execution_datetime
   ,protocols_io_doi
   ,operator
@@ -292,8 +292,8 @@ truncate table metadata.metabolomics
 ;
 insert into metadata.metabolomics
   (sample_pk
-  ,hubmap_donor_id
-  ,hubmap_tissue_id
+  ,study_donor_id
+  ,study_tissue_id
   ,execution_datetime
   ,protocols_io_doi
   ,operator
@@ -389,8 +389,8 @@ join core.sample on sample.sample_bk = sample_id
 --PROTEOMICS
 insert into metadata.proteomics
   (sample_pk
-  ,hubmap_donor_id
-  ,hubmap_tissue_id
+  ,study_donor_id
+  ,study_tissue_id
   ,execution_datetime
   ,protocols_io_doi
   ,operator
@@ -486,8 +486,8 @@ join core.sample on sample.sample_bk = sample_id
 --RNA-SEQ BULK
 insert into metadata.rnaseq_bulk
   (sample_pk
-  ,hubmap_donor_id
-  ,hubmap_tissue_id
+  ,study_donor_id
+  ,study_tissue_id
   ,execution_datetime
   ,protocols_io_doi
   ,operator
@@ -563,8 +563,8 @@ join core.sample on sample.sample_bk = sample_id
 --RNA-SEQ SINGLE-NUCLEUS
 insert into metadata.rnaseq_single_nucleus
   (sample_pk
-  ,hubmap_donor_id
-  ,hubmap_tissue_id
+  ,study_donor_id
+  ,study_tissue_id
   ,execution_datetime
   ,protocols_io_doi
   ,operator
@@ -648,8 +648,8 @@ join core.sample on sample.sample_bk = sample_id
 --WHOLE-GENOME SEQUENCING
 insert into metadata.whole_genome_seq
   (sample_pk
-  ,hubmap_donor_id
-  ,hubmap_tissue_id
+  ,study_donor_id
+  ,study_tissue_id
   ,execution_datetime
   ,protocols_io_doi
   ,operator

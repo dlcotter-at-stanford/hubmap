@@ -1,4 +1,4 @@
-drop database if exists hubmap
+drop database if exists biolab
 ;
-create database hubmap
+create database biolab
 ;

@@ -29,8 +29,8 @@ create role grp_readonly nosuperuser inherit nocreatedb nocreaterole noreplicati
 grant role_readonly to grp_readonly;
 
 --user
-drop role if exists hubmap;
-create role hubmap with login;
---alter role hubmap with password 'somepassword';  # set the password manually since this file will be included in the Git repo
-alter role hubmap valid until 'infinity';
-grant grp_readonly to hubmap;
+drop role if exists reader;
+create role reader with login;
+--alter role reader with password 'somepassword';  # set the password manually since this file will be included in the Git repo
+alter role reader valid until 'infinity';
+grant grp_readonly to reader;

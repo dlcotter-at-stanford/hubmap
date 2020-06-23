@@ -1,8 +1,8 @@
 create table metadata.proteomics
 (metadata_pk serial primary key
 ,sample_pk integer references core.sample(sample_pk)
-,hubmap_donor_id varchar(100)
-,hubmap_tissue_id varchar(100)
+,study_donor_id varchar(100)
+,study_tissue_id varchar(100)
 ,execution_datetime timestamp
 ,protocols_io_doi varchar(100)
 ,operator varchar(100)

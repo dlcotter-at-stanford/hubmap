@@ -2,9 +2,7 @@
 -- the business key will be suffixed with "_id". The data type for primary keys will
 -- be integer (for efficiency) and for business keys will be character (to match
 -- alphanumeric naming convention of study).
-create table core.subject
-  (subject_pk     serial primary key
-  ,study_pk       integer references core.study(study_pk)
-  ,subject_bk     varchar(100)
-  ,disease_status varchar(100))
+create table core.study
+  (study_pk     serial primary key
+  ,study_bk     varchar(100))
 ;

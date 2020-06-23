@@ -1,8 +1,8 @@
 create table core.atacseq_bulk_metadata
   (sample_pk                                  int4
   ,sample_bk                                  varchar(100)
-  ,hubmap_subject_bk                          varchar(100)
-  ,hubmap_tissue_bk                           varchar(100)
+  ,study_subject_bk                          varchar(100)
+  ,study_tissue_bk                           varchar(100)
   ,execution_datetime                         timestamp
   ,protocols_io_doi                           varchar(100)
   ,operator                                   varchar(100)

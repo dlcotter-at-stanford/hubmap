@@ -1,8 +1,8 @@
 create or replace function metadata.get_atacseq_single_nucleus_metadata(p_subject_bk varchar(100), p_sample_bk varchar(100))
 returns table
 	(sample_bk varchar(100)
-	,hubmap_donor_id varchar(100)
-	,hubmap_tissue_id varchar(100)
+	,study_donor_id varchar(100)
+	,study_tissue_id varchar(100)
 	,execution_datetime timestamp
 	,protocols_io_doi varchar(100)
 	,"operator" varchar(100)
@@ -49,8 +49,8 @@ language sql
 as $$
   select
      sample_bk
-    ,hubmap_donor_id
-    ,hubmap_tissue_id
+    ,study_donor_id
+    ,study_tissue_id
     ,execution_datetime
     ,protocols_io_doi
     ,"operator"
