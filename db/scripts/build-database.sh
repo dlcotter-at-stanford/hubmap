@@ -61,11 +61,10 @@ psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/c
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/tables/tissue.sql
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/tables/assay.sql
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/tables/storage.sql
-#psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_tissues_and_assays_by_subject.sql
+psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/tables/_load_tables.sql -v data_dir="$DATA_DIR"
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_samples.sql
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_subjects.sql
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/functions/get_pathology.sql
-psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/core/tables/_load_tables.sql -v data_dir="$DATA_DIR"
 
 # Metadata tables
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/metadata/schema.sql
