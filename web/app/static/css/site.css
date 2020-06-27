@@ -88,8 +88,7 @@ footer {
   top: 20px;
   left: 20px;
   width: 1510px;
-  min-height: 530px;
-  /*clear: both;*/
+  min-height: 2000px; /* set to this high number to avoid the table extending beyond its background */
 }
 
 .tab {
@@ -129,6 +128,10 @@ footer {
 
 [type=radio]:checked ~ label ~ .content {
   z-index: 1;
+}
+
+footer {
+  overflow-y: scroll; /* allows bottom half of screen to scroll if there's out-of-frame content */
 }
 
 footer table {

@@ -6,6 +6,7 @@
 *.tsv
 *.xlsx
 .DS_Store
+.Rhistory
 .pgpass
 Session.vim
 __pycache__
