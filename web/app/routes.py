@@ -57,7 +57,12 @@ def map(subject):
     tables[name]['header'] = friendly_names(dataset['header'])
     tables[name]['data'] = dataset['data']
 
-  return flask.render_template('map.html', title='Samples', subject=subject, tables=tables)
+  # Get a list of other available subjects to browse from sidebar
+  # Note: This data set needs to be separate from those in "datasets" or it
+  # will show up in the tabbed tables along with clinical, pathology, etc.
+  other_subjects = database.Database(app.config).get_subjects_with_mapped_samples()
+
+  return flask.render_template('map.html', title='Samples', subject=subject, tables=tables, other_subjects=other_subjects)
 
 def friendly_names(header):
   """ Purpose:  Translate internal database column names into more user-friendly equivalents

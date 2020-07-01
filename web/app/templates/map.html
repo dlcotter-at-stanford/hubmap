@@ -24,6 +24,7 @@
       ];
     </script>
     <script type='text/javascript' src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script type='text/javascript' src="{{ url_for('static', filename='js/lib/sort-table.js') }}"></script>
   </head>
 
   <body>
@@ -31,9 +32,20 @@
 
     <aside>
       <div id='controls'>
+        <fieldset id='colon_select_fieldset'>
+          <legend id='colon_select_legend'>Colon</legend>
+            {# display links to other colons #}
+            {% for other_subject in other_subjects['data'] %}
+              {% if other_subject.subject_bk != subject %}
+                <label><a href="{{ url_for('map', subject=other_subject.subject_bk) }}">{{ other_subject.subject_bk }}</a></label>
+              {% endif %}
+            {% endfor %}
+          </select>
+        </fieldset>
+
         <fieldset id='tissue_type_fieldset'>
           <legend id='tissue_type_legend'>Tissue Type</legend>
-          <input type='checkbox' name='tissue_type' id='tissue_type_normal' value='normal' checked='true'><label for='tissue_type_normal'>Normal</label><br/>
+          <input type='checkbox' name='tissue_type' id='tissue_type_normal' value='normal' checked='true'><label for='tissue_type_normal'>Unaffected</label><br/>
           <input type='checkbox' name='tissue_type' id='tissue_type_polyp' value='polyp' checked='true'><label for='tissue_type_polyp'>Polyp</label><br/>
           <input type='checkbox' name='tissue_type' id='tissue_type_adca' value='adca' checked='true'><label for='tissue_type_adca'>AdCa</label><br/>
         </fieldset>
@@ -75,11 +87,16 @@
           <input type='radio' id='tab-{{ table }}' name='tabbed-tables-group' checked>
           <label for='tab-{{ table }}'>{{ table }} <a class='download-link' table_id='table-{{ table }}' style='font-size: 10px; font-variant: small-caps'>[CSV]</a></label>
           <div class='content'>
-            <table id='table-{{ table }}'>
+            <table id='table-{{ table }}' class='js-sort-table'>
               <thead>
                 <tr>
                   {% for column in tables[table]['header'] %}
-                    <th>{{ column }}</th>
+                    {# looking for specific columns to sort as numbers will work for now but soon you'll need to pass the data type from the database as well #}
+                    {% if column.lower() in ['length', 'width', 'depth', 'x', 'y' ] %}
+                      <th class='js-sort-number'>{{ column }}</th>
+                    {% else %}
+                      <th class='js-sort-string'>{{ column }}</th>
+                    {% endif %}
                   {% endfor %}
                 </tr>
               </thead>

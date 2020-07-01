@@ -124,8 +124,10 @@ window.onload = function() {
       circle.setAttribute('r', (samples[i].length * samples[i].width * samples[i].depth) ** (1/3) );
       circle.setAttribute('fill', 'gray');
 
+      // Set the text of the pop-up helper that appears when hovering over a
+      // sample (through the "title" attribute of the circle element)
       var title = document.createElement('title');
-      title.innerHTML = `${ samples[i].id } \n (${ samples[i].x }, ${ samples[i].y }) \n ${ samples[i].length } x ${ samples[i].width } x ${ samples[i].depth } (${ (samples[i].length * samples[i].width * samples[i].depth) } mm³) \n ${ samples[i].tissue_type }, ${ samples[i].phenotype }, ${ samples[i].location }`;
+      title.innerHTML = `${ samples[i].id } \n(${ samples[i].x }, ${ samples[i].y }) \n${ samples[i].length } x ${ samples[i].width } x ${ samples[i].depth } (${ (samples[i].length * samples[i].width * samples[i].depth) } mm³) \n${ samples[i].tissue_type }, ${ samples[i].phenotype }, ${ samples[i].location }`;
 
       circle.appendChild(title);
       viz.appendChild(circle);
