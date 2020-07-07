@@ -120,7 +120,7 @@ window.onload = function() {
       circle.setAttribute('width', samples[i].width);
       circle.setAttribute('depth', samples[i].depth);
       circle.setAttribute('cx', samples[i].x);
-      circle.setAttribute('cy', samples[i].y -150); // hack to put dots where they belong for A014
+      circle.setAttribute('cy', samples[i].y);
       circle.setAttribute('r', (samples[i].length * samples[i].width * samples[i].depth) ** (1/3) );
       circle.setAttribute('fill', 'gray');
 
@@ -161,9 +161,9 @@ window.onload = function() {
         line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.classList.add('distance_line');
         line.setAttribute('x1', samples[i].x);
-        line.setAttribute('y1', samples[i].y-150); // A014
+        line.setAttribute('y1', samples[i].y);
         line.setAttribute('x2', samples[j].x);
-        line.setAttribute('y2', samples[j].y-150); // A014
+        line.setAttribute('y2', samples[j].y);
         line.style = 'stroke:gray; stroke-dasharray: 2; stroke-width:2';
         viz.appendChild(line);
 
@@ -254,9 +254,96 @@ window.onload = function() {
     }
   }
 
+  function drawRulers() {
+    /* Assumptions: the average colon is 1.5m (~5ft) long; our viewport is
+       1500px wide; therefore, the conversion ratio between centimeters and
+       pixels should be 1500px/150cm or 10px/cm. */
+    viz = document.getElementById('viz');
+
+    var frame_width = 1500;
+    var frame_height = 400;
+    var conversion_factor = 10;  // 10 pixels per centimeter
+    var horizontal_offset = 20;
+    var vertical_offset = 20;
+
+    // Draw horizontal ruler
+    line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.classList.add('ruler_line');
+    line.setAttribute('x1', horizontal_offset);
+    line.setAttribute('y1', frame_height - vertical_offset);
+    line.setAttribute('x2', frame_width);
+    line.setAttribute('y2', frame_height - vertical_offset);
+    line.style = 'stroke:gray; stroke-width:1';
+    viz.appendChild(line);
+
+    for (let cm=1; cm < frame_width/conversion_factor; cm++) {
+      // Draw horizontal tick marks (the tertiary formula makes every tenth line
+      // twice as big and every hundredth line three times as big)
+      line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.classList.add('ruler_line');
+      line.setAttribute('x1', horizontal_offset + cm * conversion_factor);
+      line.setAttribute('y1', frame_height - vertical_offset);
+      line.setAttribute('x2', horizontal_offset + cm * conversion_factor);
+      line.setAttribute('y2', (frame_height - vertical_offset) -
+                              (cm % 100 == 0 ? 3 * conversion_factor :
+                               cm % 10 == 0 ? 2 * conversion_factor :
+                               cm % 5 == 0 ? 1.5 * conversion_factor :
+                               conversion_factor));
+      line.style = 'stroke:gray; stroke-width:1';
+      viz.appendChild(line);
+
+      // Draw distance labels
+      if (cm % conversion_factor == 0) {
+        text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', horizontal_offset + cm * conversion_factor - 7);  // -7 pixels helps center the text
+        text.setAttribute('y', frame_height - 2);  // slightly away from bottom of frame
+        text.style = 'font-size:small';
+        text.innerHTML = cm;
+        viz.appendChild(text);
+      }
+    }
+
+    // Draw vertical ruler
+    line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.classList.add('ruler_line');
+    line.setAttribute('x1', horizontal_offset);
+    line.setAttribute('y1', frame_height - vertical_offset);
+    line.setAttribute('x2', horizontal_offset);
+    line.setAttribute('y2', 0);
+    line.style = 'stroke:gray; stroke-width:1';
+    viz.appendChild(line);
+
+    // Draw vertical tick marks
+    for (let cm=1; cm < frame_width / conversion_factor; cm++) {
+      line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.classList.add('ruler_line');
+      line.setAttribute('x1', horizontal_offset);
+      line.setAttribute('y1', frame_height - vertical_offset - cm * conversion_factor);
+      line.setAttribute('x2', horizontal_offset +
+                              (cm % 100 == 0 ? 3 * conversion_factor :
+                               cm % 10 == 0 ? 2 * conversion_factor :
+                               cm % 5 == 0 ? 1.5 * conversion_factor :
+                               conversion_factor));
+      line.setAttribute('y2', frame_height - vertical_offset - cm * conversion_factor);
+      line.style = 'stroke:gray; stroke-width:1';
+      viz.appendChild(line);
+
+      // Draw distance labels
+      if (cm % conversion_factor == 0) {
+        text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', 2);  // slightly offset from frame
+        text.setAttribute('y', frame_height - vertical_offset - cm * conversion_factor + 5);
+        text.style = 'font-size:small';
+        text.innerHTML = cm;
+        viz.appendChild(text);
+      }
+    }
+  }
+
   // PAGE LOAD
   setVisibility();
   updateImage();
   updateTable();
   attachEvents();
+  drawRulers();
 };
