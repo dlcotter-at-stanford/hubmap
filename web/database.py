@@ -13,9 +13,9 @@ class Database:
     if config is None:
       self.host     = 'localhost'
       self.port     =  5432
-      self.dbname   = 'hubmap'
-      self.username = 'hubmap'
-      self.password = 'hubmap'
+      self.dbname   = 'biolab'
+      self.username = 'reader'
+      self.password = 'reader'
     else:
       self.host     = config['DATABASE_HOST']
       self.port     = config['DATABASE_PORT']

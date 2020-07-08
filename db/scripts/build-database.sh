@@ -38,6 +38,7 @@ psql -q -h localhost -d postgres -U postgres -f $BASE_DIR/sql/database/database.
 
 # Staging tables. Order of creation not important.
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/staging/schema.sql
+psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/staging/tables/colon_measurements.sql
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/staging/tables/metadata_atacseq_bulk_hiseq.sql
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/staging/tables/metadata_atacseq_single_nucleus.sql
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/staging/tables/metadata_lipidomics.sql

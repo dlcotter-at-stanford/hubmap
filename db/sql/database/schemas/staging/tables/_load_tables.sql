@@ -1,3 +1,12 @@
+--Colon measurements
+\set colon_measurements_path :data_dir '/colon-measurements.tsv'
+;
+copy staging.colon_measurements
+from :'colon_measurements_path'
+with delimiter E'\t' --tab separator
+csv header --ignore header
+;
+
 --This script is expecting the "data_dir" parameter to be passed in from the
 --command line, i.e. db/scripts/build-database.sh
 
@@ -111,3 +120,14 @@ from :'metadata_wgs_path'
 with delimiter E'\t' --tab separator
 csv header --ignore header
 ;
+
+--waiting on Roxanne to get back to me w/column matching
+--Additional RNA-seq single-nucleus metadata
+--\set metadata_rnaseq_single_nucleus_addl_path :data_dir '/assay-metadata/rnaseq/single-nucleus/metadata-addl.tsv'
+--;
+--copy staging.metadata_rnaseq_single_nucleus_addl
+--from :'metadata_rnaseq_single_nucleus_addl_path'
+--with delimiter E'\t' --tab separator
+--csv header --ignore header
+--;
+
