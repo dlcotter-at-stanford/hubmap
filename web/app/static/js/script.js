@@ -5,7 +5,6 @@ window.onload = function() {
   var conversion_factor = 10;  // 10 pixels per centimeter
   var horizontal_offset = 20;
   var vertical_offset = 20;
-  var colon_length = subject.colon_length;
 
   // Calculate sample size, size category (small/medium/large), and distance from
   // other samples for each sample.
@@ -124,8 +123,8 @@ window.onload = function() {
       circle.setAttribute('length', samples[i].length);
       circle.setAttribute('width', samples[i].width);
       circle.setAttribute('depth', samples[i].depth);
-      circle.setAttribute('cx', samples[i].x * (colon_length / conversion_factor) - 20);
-      circle.setAttribute('cy', 400 - 20 - samples[i].y * (colon_length / conversion_factor));
+      circle.setAttribute('cx', horizontal_offset + samples[i].x * conversion_factor);
+      circle.setAttribute('cy', vertical_offset + samples[i].y * conversion_factor);
       circle.setAttribute('r', (samples[i].length * samples[i].width * samples[i].depth) ** (1/3) );
       circle.setAttribute('fill', 'gray');
 
@@ -166,10 +165,10 @@ window.onload = function() {
 
         line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.classList.add('distance_line');
-        line.setAttribute('x1', samples[i].x);
-        line.setAttribute('y1', samples[i].y);
-        line.setAttribute('x2', samples[j].x);
-        line.setAttribute('y2', samples[j].y);
+        line.setAttribute('x1', samples[i].x * conversion_factor);
+        line.setAttribute('y1', samples[i].y * conversion_factor);
+        line.setAttribute('x2', samples[j].x * conversion_factor);
+        line.setAttribute('y2', samples[j].y * conversion_factor);
         line.style = 'stroke:gray; stroke-dasharray: 2; stroke-width:2';
         viz.appendChild(line);
 
@@ -270,9 +269,9 @@ window.onload = function() {
     line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.classList.add('ruler_line');
     line.setAttribute('x1', horizontal_offset);
-    line.setAttribute('y1', frame_height - vertical_offset);
+    line.setAttribute('y1', vertical_offset);
     line.setAttribute('x2', frame_width);
-    line.setAttribute('y2', frame_height - vertical_offset);
+    line.setAttribute('y2', vertical_offset);
     line.style = 'stroke:gray; stroke-width:1';
     viz.appendChild(line);
 
@@ -282,13 +281,12 @@ window.onload = function() {
       line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.classList.add('ruler_line');
       line.setAttribute('x1', horizontal_offset + cm * conversion_factor);
-      line.setAttribute('y1', frame_height - vertical_offset);
+      line.setAttribute('y1', vertical_offset);
       line.setAttribute('x2', horizontal_offset + cm * conversion_factor);
-      line.setAttribute('y2', (frame_height - vertical_offset) -
-                              (cm % 100 == 0 ? 3 * conversion_factor :
-                               cm % 10 == 0 ? 2 * conversion_factor :
-                               cm % 5 == 0 ? 1.5 * conversion_factor :
-                               conversion_factor));
+      line.setAttribute('y2', vertical_offset + (cm % 100 == 0 ? 3 * conversion_factor :
+                                                 cm % 10 == 0 ? 2  * conversion_factor :
+                                                 cm % 5 == 0 ? 1.5 * conversion_factor :
+                                                                     conversion_factor));
       line.style = 'stroke:gray; stroke-width:1';
       viz.appendChild(line);
 
@@ -296,7 +294,7 @@ window.onload = function() {
       if (cm % conversion_factor == 0) {
         text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', horizontal_offset + cm * conversion_factor - 7);  // -7 pixels helps center the text
-        text.setAttribute('y', frame_height - 2);  // slightly away from bottom of frame
+        text.setAttribute('y', vertical_offset - 5);  // slightly away from top of frame
         text.style = 'font-size:small';
         text.innerHTML = cm;
         viz.appendChild(text);
@@ -307,9 +305,9 @@ window.onload = function() {
     line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.classList.add('ruler_line');
     line.setAttribute('x1', horizontal_offset);
-    line.setAttribute('y1', frame_height - vertical_offset);
+    line.setAttribute('y1', vertical_offset);
     line.setAttribute('x2', horizontal_offset);
-    line.setAttribute('y2', 0);
+    line.setAttribute('y2', frame_height);
     line.style = 'stroke:gray; stroke-width:1';
     viz.appendChild(line);
 
@@ -318,13 +316,13 @@ window.onload = function() {
       line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
       line.classList.add('ruler_line');
       line.setAttribute('x1', horizontal_offset);
-      line.setAttribute('y1', frame_height - vertical_offset - cm * conversion_factor);
+      line.setAttribute('y1', vertical_offset + cm * conversion_factor);
       line.setAttribute('x2', horizontal_offset +
                               (cm % 100 == 0 ? 3 * conversion_factor :
-                               cm % 10 == 0 ? 2 * conversion_factor :
+                               cm % 10 == 0 ? 2  * conversion_factor :
                                cm % 5 == 0 ? 1.5 * conversion_factor :
-                               conversion_factor));
-      line.setAttribute('y2', frame_height - vertical_offset - cm * conversion_factor);
+                                                   conversion_factor));
+      line.setAttribute('y2', vertical_offset + cm * conversion_factor);
       line.style = 'stroke:gray; stroke-width:1';
       viz.appendChild(line);
 
@@ -332,7 +330,7 @@ window.onload = function() {
       if (cm % conversion_factor == 0) {
         text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', 2);  // slightly offset from frame
-        text.setAttribute('y', frame_height - vertical_offset - cm * conversion_factor + 5);
+        text.setAttribute('y', vertical_offset + cm * conversion_factor + 5);
         text.style = 'font-size:small';
         text.innerHTML = cm;
         viz.appendChild(text);
