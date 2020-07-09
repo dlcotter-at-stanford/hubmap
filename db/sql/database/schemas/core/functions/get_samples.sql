@@ -7,8 +7,8 @@ returns table
 	,size_length numeric(4,1)
 	,size_width  numeric(4,1)
 	,size_depth  numeric(4,1)
-	,x_coord     int4
-	,y_coord     int4
+	,x_coord     numeric(4,1)
+	,y_coord     numeric(4,1)
 	,stage       varchar(100)
 	,phenotype   varchar(100)
 	,organ_piece varchar(100))

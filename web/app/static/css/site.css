@@ -3,7 +3,7 @@ body {
   top: 0;
   left: 0;
   display: grid;
-  grid-template-columns: 240px auto;
+  grid-template-columns: 280px auto;
   grid-template-rows: 100px auto 560px;
   width: 100vw;
   height: 100vh;

@@ -76,8 +76,8 @@ select
     ,coalesce(nullif(split_part(st.size_mm, 'x', 1), ''), '1')::numeric(4,1) as size_length
     ,coalesce(nullif(split_part(st.size_mm, 'x', 2), ''), '1')::numeric(4,1) as size_width
     ,coalesce(nullif(split_part(st.size_mm, 'x', 3), ''), '1')::numeric(4,1) as size_depth
-    ,coords.x
-    ,coords.y
+    ,coords.x::numeric(5,1)
+    ,coords.y::numeric(5,1)
     ,lower(st.dysplasia_category) as dysplasia_category
     ,case
     	when st.dysplasia_percentage !~ '&'

@@ -1,11 +1,14 @@
 window.onload = function() {
-  //// SAMPLES
-  // Samples live at a global scope and are accessed by the various functions, some of which change them.
-  // Right now they are JSON output by the server-side code, but now that the same data is also output as
-  // SVG circles, it would make sense eventually to use JavaScript to get the sample data from the SVG
-  // elements, rather than have the data output to the same page twice.
+  //// GLOBALS
+  var frame_width = 1500;
+  var frame_height = 400;
+  var conversion_factor = 10;  // 10 pixels per centimeter
+  var horizontal_offset = 20;
+  var vertical_offset = 20;
+  var colon_length = subject.colon_length;
 
-  // Calculate size, size category (small/medium/large), and distance from other samples for each sample
+  // Calculate sample size, size category (small/medium/large), and distance from
+  // other samples for each sample.
   for (let i=0; i<samples.length; i++) {
     samples[i].size = samples[i].length * samples[i].width * samples[i].depth;
     samples[i].size_cat = samples[i].size < 50 ? 'small' : samples[i].size < 100 ? 'medium' : 'large';
@@ -110,6 +113,8 @@ window.onload = function() {
   }
 
   function updateImage() {
+    viz = document.getElementById('viz');
+
     for (let i=0; i<samples.length; i++) {
       var circle = document.createElement('circle');
       circle.setAttribute('id', samples[i].id);
@@ -119,8 +124,8 @@ window.onload = function() {
       circle.setAttribute('length', samples[i].length);
       circle.setAttribute('width', samples[i].width);
       circle.setAttribute('depth', samples[i].depth);
-      circle.setAttribute('cx', samples[i].x);
-      circle.setAttribute('cy', samples[i].y);
+      circle.setAttribute('cx', samples[i].x * (colon_length / conversion_factor) - 20);
+      circle.setAttribute('cy', 400 - 20 - samples[i].y * (colon_length / conversion_factor));
       circle.setAttribute('r', (samples[i].length * samples[i].width * samples[i].depth) ** (1/3) );
       circle.setAttribute('fill', 'gray');
 
@@ -143,6 +148,7 @@ window.onload = function() {
 
   function drawDistance(sample_id) {
     viz = document.getElementById('viz');
+
     for (let i=0; i<samples.length; i++) {
       if (samples[i].id !== sample_id) {
         continue;
@@ -259,12 +265,6 @@ window.onload = function() {
        1500px wide; therefore, the conversion ratio between centimeters and
        pixels should be 1500px/150cm or 10px/cm. */
     viz = document.getElementById('viz');
-
-    var frame_width = 1500;
-    var frame_height = 400;
-    var conversion_factor = 10;  // 10 pixels per centimeter
-    var horizontal_offset = 20;
-    var vertical_offset = 20;
 
     // Draw horizontal ruler
     line = document.createElementNS('http://www.w3.org/2000/svg', 'line');

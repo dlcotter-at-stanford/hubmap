@@ -12,8 +12,8 @@ create table core.sample
   ,size_length    numeric(4,1)
   ,size_width     numeric(4,1)
   ,size_depth     numeric(4,1)
-  ,x_coord        integer
-  ,y_coord        integer
+  ,x_coord        numeric(5,1)
+  ,y_coord        numeric(5,1)
   ,dysplasia_cat  varchar(100)
   ,dysplasia_pct  integer
   ,notes          varchar(200)

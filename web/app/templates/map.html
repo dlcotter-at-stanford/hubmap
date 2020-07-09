@@ -9,6 +9,19 @@
     {% endif %}
     <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='css/site.css') }}">
     <script type='text/javascript'>
+      {% for other_subject in other_subjects['data'] %}
+        {% if other_subject.subject_bk == subject %}
+          var subject = {
+            id                   : '{{ other_subject.subject_bk }}'
+            ,disease_status      : '{{ other_subject.disease_status }}'
+            ,colon_length        : {{ other_subject.colon_length        if other_subject.colon_length        else 'undefined' }}
+            ,rectum_position     : {{ other_subject.rectum_position     if other_subject.rectum_position     else 'undefined' }}
+            ,descending_position : {{ other_subject.descending_position if other_subject.descending_position else 'undefined' }}
+            ,ascending_position  : {{ other_subject.ascending_position  if other_subject.ascending_position  else 'undefined' }}
+            ,transverse_position : {{ other_subject.transverse_position if other_subject.transverse_position else 'undefined' }} };
+        {% endif %}
+      {% endfor %}
+
       var samples = [
       {% for sample in tables['clinical']['data'] %}
         { id          : '{{ sample.sample_bk }}'
@@ -52,13 +65,14 @@
 
         <fieldset id='size_fieldset'>
           <legend id='size_legend'>Size</legend>
+          <input type='checkbox' name='size' id='size_NA' value='NA' checked='true'><label for='size_NA'>N/A</label><br/>
           <input type='checkbox' name='size' id='size_small' value='small' checked='true'><label for='size_small'>Small</label><br/>
           <input type='checkbox' name='size' id='size_medium' value='medium' checked='true'><label for='size_medium'>Medium</label><br/>
           <input type='checkbox' name='size' id='size_large' value='large' checked='true'><label for='size_large'>Large</label><br/>
         </fieldset>
 
         <fieldset id='phenotype_fieldset'>
-          <legend id='phenotype_legend'>Phenotype</legend>
+          <legend id='phenotype_legend'>Polyp Phenotype</legend>
           <input type='checkbox' name='phenotype' id='phenotype_normal' value='normal' checked='true'><label for='phenotype_normal'>Normal</label><br/>
           <input type='checkbox' name='phenotype' id='phenotype_sessile' value='sessile' checked='true'><label for='phenotype_sessile'>Sessile</label><br/>
           <input type='checkbox' name='phenotype' id='phenotype_stalk' value='stalk' checked='true'><label for='phenotype_stalk'>Stalk</label><br/>
@@ -104,7 +118,7 @@
                 {% for row in tables[table]['data'] %}
                   <tr>
                     {% for value in row %}
-                      <td>{{ value }}</td>
+                      <td>{{ value if value else '--' }}</td>
                     {% endfor %}
                   </tr>
                 {% endfor %}
