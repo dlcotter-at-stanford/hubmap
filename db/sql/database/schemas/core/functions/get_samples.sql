@@ -32,4 +32,6 @@ and
 	 or (has_coordinates is false
 		 and sample.x_coord is null
 		 and sample.y_coord is null))
+
+order by sample.sample_bk
 $$
