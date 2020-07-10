@@ -14,11 +14,11 @@
           var subject = {
             id                   : '{{ other_subject.subject_bk }}'
             ,disease_status      : '{{ other_subject.disease_status }}'
-            ,colon_length        : {{ other_subject.colon_length        if other_subject.colon_length        else 'undefined' }}
             ,rectum_position     : {{ other_subject.rectum_position     if other_subject.rectum_position     else 'undefined' }}
             ,descending_position : {{ other_subject.descending_position if other_subject.descending_position else 'undefined' }}
+            ,transverse_position : {{ other_subject.transverse_position if other_subject.transverse_position else 'undefined' }}
             ,ascending_position  : {{ other_subject.ascending_position  if other_subject.ascending_position  else 'undefined' }}
-            ,transverse_position : {{ other_subject.transverse_position if other_subject.transverse_position else 'undefined' }} };
+            ,colon_length        : {{ other_subject.colon_length        if other_subject.colon_length        else 'undefined' }} };
         {% endif %}
       {% endfor %}
 
@@ -38,6 +38,16 @@
     </script>
     <script type='text/javascript' src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script type='text/javascript' src="{{ url_for('static', filename='js/lib/sort-table.js') }}"></script>
+    <style type='text/css'>
+      table {
+        position: relative;
+      }
+      th {
+        background: white; /* keeps from showing text behind header when scrolling */
+        position: sticky; /* keeps header at top even while scrolling */
+        top: 0; /* the secret ingredient to sticky table headers */
+      }
+    </style>
   </head>
 
   <body>
@@ -49,9 +59,7 @@
           <legend id='colon_select_legend'>Colon</legend>
             {# display links to other colons #}
             {% for other_subject in other_subjects['data'] %}
-              {% if other_subject.subject_bk != subject %}
-                <label><a href="{{ url_for('map', subject=other_subject.subject_bk) }}">{{ other_subject.subject_bk }}</a></label>
-              {% endif %}
+              <label><a href="{{ url_for('map', subject=other_subject.subject_bk) }}">{{ other_subject.subject_bk }}</a></label>
             {% endfor %}
           </select>
         </fieldset>

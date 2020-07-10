@@ -137,9 +137,13 @@ footer {
 footer table {
   z-index: -1;
   border-collapse: collapse;
+  position: relative;
 }
 
-footer table th, table td {
+footer table th {
+  background: white; /* keeps from showing text behind header when scrolling */
+  position: sticky; /* keeps header at top even while scrolling */
+  top: 0; /* the secret ingredient to sticky table headers */
   padding: 4px 8px;
 }
 
@@ -153,6 +157,7 @@ footer table tbody {
 }
 
 footer table td {
+  padding: 4px 8px;
   font-size: 14px;
 }
 
