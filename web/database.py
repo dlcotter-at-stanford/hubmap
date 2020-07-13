@@ -1,7 +1,8 @@
-import sys
+import functools
 from loguru import logger
 import psycopg2
 from psycopg2.extras import DictCursor
+import sys
 import traceback
 
 class Database:
@@ -34,7 +35,7 @@ class Database:
         sys.exit()
 
   def call_proc(self, proc, args):
-    """Run a SQL query to select rows from table and return dictionarys."""
+    """Run a SQL query to select rows from table and return dictionaries."""
     self.connect()
     with self.conn.cursor(cursor_factory=DictCursor) as cursor:
       try:
@@ -53,8 +54,35 @@ class Database:
       # dictionaries, but in the end this seemed simpler.
       header = [ desc[0] for desc in cursor.description ]
       data = [ row for row in cursor.fetchall() ]
+
+      # Translate internal database column names into more user-friendly
+      # equivalents. For those whose database column names are the same as
+      # their user friendly names but for an underscore, which is many, the
+      # substitution is done in the else clause of the list comprehension.
+      # For all others, the translation table provides the user-friendly name
+      # The wrapped function will return a data set with a field 'header'.
+      translation_table = { 'subject_bk' : 'subject'
+                           ,'sample_bk'  : 'sample name'
+                           ,'size_length': 'length'
+                           ,'size_width' : 'width'
+                           ,'size_depth' : 'depth'
+                           ,'x_coord'    : 'x'
+                           ,'y_coord'    : 'y'
+                           ,'organ_piece': 'location'
+                           ,'attr'       : 'attribute'}
+      
+      header = [ translation_table[col] if col in translation_table else col.replace('_',' ') for col in header ]
+
       return { 'header': header, 'data': data }
 
+  def get_results_by_column_name(self, dataset, column_name):
+    # Find the ordinal position of the requested column
+    column_num = next(index for index, item in enumerate(dataset['header']) if item.lower() == column_name)
+
+    # Return just the results from that column
+    return [ row[column_num] for row in dataset['data'] ]
+
+  ### Stored procedure wrappers
   def get_subjects_with_mapped_samples(self):
     return self.call_proc('core.get_subjects', { 'has_phi': False, 'has_coordinates': True })
 
@@ -64,9 +92,13 @@ class Database:
   def get_pathology_by_subject(self, subject):
     return self.call_proc('core.get_pathology', { 'p_subject_bk': subject })
     
-  def get_metadata(self, metadata_type, subject, sample):
-    # Not sure this is the right way to raise this error, but at least *something* will happen if the metadata type isn't supported
+  def get_metadata(self, metadata_type, subject, sample=None):
+    # Not sure this is the right way to raise this error, but at least
+    # something will happen if the metadata type isn't supported.
     if metadata_type not in ['atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics', 'metabolomics', 'proteomics', 'rnaseq_bulk', 'rnaseq_single_nucleus', 'whole_genome_seq' ]:
       raise
     else:
       return self.call_proc('metadata.get_' + metadata_type + '_metadata', { 'p_subject_bk': subject, 'p_sample_bk': sample })
+
+  def get_all_metadata(self, subject, sample=None):
+    return { assay: self.get_metadata(assay, subject, sample) for assay in [ 'atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics', 'metabolomics', 'proteomics', 'rnaseq_bulk', 'rnaseq_single_nucleus', 'whole_genome_seq' ] }
