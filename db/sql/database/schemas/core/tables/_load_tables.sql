@@ -14,20 +14,20 @@ insert into core.subject
    study_pk
   ,subject_bk
   ,disease_status
-  ,colon_length
   ,rectum_position
   ,descending_position
+  ,transverse_position
   ,ascending_position
-  ,transverse_position)
+  ,colon_length)
 select distinct
    study.study_pk
   ,patient
   ,donor_disease_status
-  ,colon_length::numeric(4,1)
   ,rectum_position::numeric(4,1)
   ,descending_position::numeric(4,1)
-  ,ascending_position::numeric(4,1)
   ,transverse_position::numeric(4,1)
+  ,ascending_position::numeric(4,1)
+  ,colon_length::numeric(4,1)
 from staging.sample_tracker
 join core.study on study.study_bk = 'HuBMAP' --see note above about hardcoding
 join staging.colon_measurements cm on cm.subject_bk = patient

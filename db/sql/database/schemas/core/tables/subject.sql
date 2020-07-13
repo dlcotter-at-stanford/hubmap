@@ -7,9 +7,9 @@ create table core.subject
   ,study_pk            integer references core.study(study_pk)
   ,subject_bk          varchar(100)
   ,disease_status      varchar(100)
-  ,colon_length        decimal(5,2)
   ,rectum_position     decimal(5,2)
   ,descending_position decimal(5,2)
+  ,transverse_position decimal(5,2)
   ,ascending_position  decimal(5,2)
-  ,transverse_position decimal(5,2))
+  ,colon_length        decimal(5,2))
 ;

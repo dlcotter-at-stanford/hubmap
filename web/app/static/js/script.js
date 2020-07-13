@@ -114,6 +114,39 @@ window.onload = function() {
   function updateImage() {
     viz = document.getElementById('viz');
 
+    var position_lines = [ 'rectum_position', 'descending_position', 'transverse_position', 'ascending_position' ]; //, 'colon_length'
+
+    for (let i=0; i<position_lines.length; i++) {
+      var position = position_lines[i];
+      var position_line = subject[position];
+
+      // null/undefined guard
+      if (!position_line)
+        continue;
+
+      var line = document.createElement('line');
+      line.setAttribute('x1', horizontal_offset + position_line * conversion_factor);
+      line.setAttribute('y1', vertical_offset);
+      line.setAttribute('x2', horizontal_offset + position_line * conversion_factor);
+      line.setAttribute('y2', frame_height);
+      line.style = 'stroke:gray; stroke-dasharray: 2; stroke-width:2';
+      viz.appendChild(line);
+
+      var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      // Left-justify the labels in their respective sections. Check first that
+      // a) we're not at the first position in the array and
+      // b) we're not missing the previous line
+      if (i === 0 || !subject[position_lines[i-1]]) {
+        text.setAttribute('x', horizontal_offset + 4);
+      } else {
+        text.setAttribute('x', horizontal_offset + 4 + subject[position_lines[i-1]] * conversion_factor);
+      }
+      text.setAttribute('y', frame_height - 4);
+      text.innerHTML = position_lines[i].substring(0, position_lines[i].indexOf('_'));
+      text.style = 'font-size:small';
+      viz.appendChild(text);
+    }
+
     for (let i=0; i<samples.length; i++) {
       var circle = document.createElement('circle');
       circle.setAttribute('id', samples[i].id);
@@ -149,15 +182,18 @@ window.onload = function() {
     viz = document.getElementById('viz');
 
     for (let i=0; i<samples.length; i++) {
+      // Only draw lines from this sample to others (not all to all)
       if (samples[i].id !== sample_id) {
         continue;
       }
 
+      // Clear existing distance lines
       distance_lines = viz.querySelectorAll('line.distance_line');
       for (let j=0; j<distance_lines.length; j++) {
         viz.removeChild(distance_lines[j]);
       }
 
+      // Only draw lines to samples that are currently visible
       for (let j=0; j<samples.length; j++) {
         if (!samples[j].visible) {
           continue;
@@ -165,10 +201,10 @@ window.onload = function() {
 
         line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.classList.add('distance_line');
-        line.setAttribute('x1', samples[i].x * conversion_factor);
-        line.setAttribute('y1', samples[i].y * conversion_factor);
-        line.setAttribute('x2', samples[j].x * conversion_factor);
-        line.setAttribute('y2', samples[j].y * conversion_factor);
+        line.setAttribute('x1', horizontal_offset + samples[i].x * conversion_factor);
+        line.setAttribute('y1', vertical_offset + samples[i].y * conversion_factor);
+        line.setAttribute('x2', horizontal_offset + samples[j].x * conversion_factor);
+        line.setAttribute('y2', vertical_offset + samples[j].y * conversion_factor);
         line.style = 'stroke:gray; stroke-dasharray: 2; stroke-width:2';
         viz.appendChild(line);
 
