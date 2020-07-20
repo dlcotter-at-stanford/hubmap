@@ -1,122 +1,131 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8' />
+    <meta charset="utf-8" />
     {% if title %}
     <title>{{ title }} - HuBMAP/Stanford TMC</title>
     {% else %}
     <title>HuBMAP/Stanford TMC</title>
     {% endif %}
-    <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename='css/site.css') }}">
-    <script type='text/javascript'>
-      {% for other_subject in other_subjects['data'] %}
-        {% if other_subject.subject_bk == subject %}
-          var subject = {
-            id                   : '{{ other_subject.subject_bk }}'
-            ,disease_status      : '{{ other_subject.disease_status }}'
-            ,rectum_position     : {{ other_subject.rectum_position     if other_subject.rectum_position     else 'undefined' }}
-            ,descending_position : {{ other_subject.descending_position if other_subject.descending_position else 'undefined' }}
-            ,transverse_position : {{ other_subject.transverse_position if other_subject.transverse_position else 'undefined' }}
-            ,ascending_position  : {{ other_subject.ascending_position  if other_subject.ascending_position  else 'undefined' }}
-            ,colon_length        : {{ other_subject.colon_length        if other_subject.colon_length        else 'undefined' }} };
-        {% endif %}
-      {% endfor %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}">
+    <script type="text/javascript">
+      // figure out a way to put domain in the global *app* variable
+      var page = {
+        domain: {
+        {% for other_subject in other_subjects["data"] %}
+          {% if other_subject.subject_bk == subject %}
+            //var subject = {
+            subject: {
+              id            : "{{ other_subject.subject_bk }}",
+              disease_status: "{{ other_subject.disease_status }}",
+              sections      : [ { name: "rectum"    , position: {{ other_subject.rectum_position     if other_subject.rectum_position     else "undefined" }} },
+                                { name: "descending", position: {{ other_subject.descending_position if other_subject.descending_position else "undefined" }} },
+                                { name: "transverse", position: {{ other_subject.transverse_position if other_subject.transverse_position else "undefined" }} },
+                                { name: "ascending" , position: {{ other_subject.ascending_position  if other_subject.ascending_position  else "undefined" }} },
+                                { name: "colon"     , position: {{ other_subject.colon_length        if other_subject.colon_length        else "undefined" }} } ]
+            //};
+            },
+          {% endif %}
+        {% endfor %}
 
-      var samples = [
-      {% for sample in tables['clinical']['data'] %}
-        { id          : '{{ sample.sample_bk }}'
-          ,length     : {{ sample.size_length }}
-          ,width      : {{ sample.size_width }}
-          ,depth      : {{ sample.size_depth }}
-          ,x          : {{ sample.x_coord }}
-          ,y          : {{ sample.y_coord }}
-          ,tissue_type: '{{ sample.stage }}'
-          ,phenotype  : '{{ sample.phenotype }}'
-          ,location   : '{{ sample.organ_piece }}' },
-      {% endfor %}
-      ];
+            //var samples = [
+            samples: [
+              {% for sample in tables["clinical"]["data"] %}
+                { id          : "{{ sample.sample_bk }}",
+                  length     : {{ sample.size_length }},
+                  width      : {{ sample.size_width }},
+                  depth      : {{ sample.size_depth }},
+                  x          : {{ sample.x_coord }},
+                  y          : {{ sample.y_coord }},
+                  tissue_type: "{{ sample.stage.lower() if sample.stage else 'none' }}",
+                  phenotype  : "{{ sample.phenotype.lower() if sample.phenotype else 'none' }}",
+                  location   : "{{ sample.organ_piece.lower() if sample.organ_piece else 'none' }}" },
+              {% endfor %}
+            ]
+          //;
+        }
+      };
     </script>
-    <script type='text/javascript' src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script type='text/javascript' src="{{ url_for('static', filename='js/lib/sort-table.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/script.js") }}"></script>
+    <script type="text/javascript" src="{{ url_for("static", filename="js/lib/sort-table.js") }}"></script>
   </head>
 
   <body>
     <header> {{ subject }} </header>
 
     <aside>
-      <div id='controls'>
-        <fieldset id='colon_select_fieldset'>
-          <legend id='colon_select_legend'>Colon</legend>
+      <div id="controls">
+        <fieldset id="colon_select_fieldset">
+          <legend id="colon_select_legend">Colon</legend>
             {# display links to other colons #}
-            {% for other_subject in other_subjects['data'] %}
-              <label><a href="{{ url_for('map', subject=other_subject.subject_bk) }}">{{ other_subject.subject_bk }}</a></label>
+            {% for other_subject in other_subjects["data"] %}
+              <label><a href="{{ url_for("map", subject=other_subject.subject_bk) }}">{{ other_subject.subject_bk }}</a></label>
             {% endfor %}
           </select>
         </fieldset>
 
-        <fieldset id='tissue_type_fieldset'>
-          <legend id='tissue_type_legend'>Tissue Type</legend>
-          <input type='checkbox' name='tissue_type' id='tissue_type_normal' value='normal' checked='true'><label for='tissue_type_normal'>Unaffected</label><br/>
-          <input type='checkbox' name='tissue_type' id='tissue_type_polyp' value='polyp' checked='true'><label for='tissue_type_polyp'>Polyp</label><br/>
-          <input type='checkbox' name='tissue_type' id='tissue_type_adca' value='adca' checked='true'><label for='tissue_type_adca'>AdCa</label><br/>
+        <fieldset id="tissue_type_fieldset">
+          <legend id="tissue_type_legend">Tissue Type</legend>
+          <input type="checkbox" name="tissue_type" id="tissue_type_normal" value="normal" checked="true"><label for="tissue_type_normal">Unaffected</label><br/>
+          <input type="checkbox" name="tissue_type" id="tissue_type_polyp" value="polyp" checked="true"><label for="tissue_type_polyp">Polyp</label><br/>
+          <input type="checkbox" name="tissue_type" id="tissue_type_adca" value="adca" checked="true"><label for="tissue_type_adca">AdCa</label><br/>
         </fieldset>
 
-        <fieldset id='size_fieldset'>
-          <legend id='size_legend'>Size</legend>
-          <input type='checkbox' name='size' id='size_NA' value='NA' checked='true'><label for='size_NA'>N/A</label><br/>
-          <input type='checkbox' name='size' id='size_small' value='small' checked='true'><label for='size_small'>Small</label><br/>
-          <input type='checkbox' name='size' id='size_medium' value='medium' checked='true'><label for='size_medium'>Medium</label><br/>
-          <input type='checkbox' name='size' id='size_large' value='large' checked='true'><label for='size_large'>Large</label><br/>
+        <fieldset id="size_fieldset">
+          <legend id="size_legend">Size</legend>
+          <!--<input type="checkbox" name="size" id="size_NA" value="NA" checked="true"><label for="size_NA">N/A</label><br/>-->
+          <input type="checkbox" name="size" id="size_small" value="small" checked="true"><label for="size_small">Small</label><br/>
+          <input type="checkbox" name="size" id="size_medium" value="medium" checked="true"><label for="size_medium">Medium</label><br/>
+          <input type="checkbox" name="size" id="size_large" value="large" checked="true"><label for="size_large">Large</label><br/>
         </fieldset>
 
-        <fieldset id='phenotype_fieldset'>
-          <legend id='phenotype_legend'>Polyp Phenotype</legend>
-          <input type='checkbox' name='phenotype' id='phenotype_normal' value='normal' checked='true'><label for='phenotype_normal'>Normal</label><br/>
-          <input type='checkbox' name='phenotype' id='phenotype_sessile' value='sessile' checked='true'><label for='phenotype_sessile'>Sessile</label><br/>
-          <input type='checkbox' name='phenotype' id='phenotype_stalk' value='stalk' checked='true'><label for='phenotype_stalk'>Stalk</label><br/>
+        <fieldset id="phenotype_fieldset">
+          <legend id="phenotype_legend">Polyp Phenotype</legend>
+          <input type="checkbox" name="phenotype" id="phenotype_sessile" value="sessile" checked="true"><label for="phenotype_sessile">Sessile</label><br/>
+          <input type="checkbox" name="phenotype" id="phenotype_stalk" value="stalk" checked="true"><label for="phenotype_stalk">Stalk</label><br/>
         </fieldset>
 
-        <fieldset id='location_fieldset'>
-          <legend id='location_legend'>Location</legend>
-          <input type='checkbox' name='location' id='location_ascending' value='ascending' checked='true'><label for='location_ascending'>Ascending</label><br/>
-          <input type='checkbox' name='location' id='location_transverse' value='transverse' checked='true'><label for='location_transverse'>Transverse</label><br/>
-          <input type='checkbox' name='location' id='location_descending' value='descending' checked='true'><label for='location_descending'>Descending</label><br/>
-          <input type='checkbox' name='location' id='location_rectum' value='rectum' checked='true'><label for='location_rectum'>Rectum</label><br/>
+        <fieldset id="location_fieldset">
+          <legend id="location_legend">Location</legend>
+          <input type="checkbox" name="location" id="location_ascending" value="ascending" checked="true"><label for="location_ascending">Ascending</label><br/>
+          <input type="checkbox" name="location" id="location_transverse" value="transverse" checked="true"><label for="location_transverse">Transverse</label><br/>
+          <input type="checkbox" name="location" id="location_descending" value="descending" checked="true"><label for="location_descending">Descending</label><br/>
+          <input type="checkbox" name="location" id="location_rectum" value="rectum" checked="true"><label for="location_rectum">Rectum</label><br/>
         </fieldset>
       </div>
     </aside>
 
     <main>
       <div id="viz-wrapper">
-        {% include 'svg/' + subject + '.svg' %}
+        {% include "svg/" + subject + ".svg" %}
       </div>
     </main>
 
     <footer>
-      <div id='tabs'>
+      <div id="tabs">
         {% for table in tables %}
-        <div class='tab'>
-          <input type='radio' id='tab-{{ table }}' name='tabbed-tables-group' checked>
-          <label for='tab-{{ table }}'>{{ table }} <a class='download-link' table_id='table-{{ table }}' style='font-size: 10px; font-variant: small-caps'>[CSV]</a></label>
-          <div class='content'>
-            <table id='table-{{ table }}' class='js-sort-table'>
+        <div class="tab">
+          <input type="radio" id="tab-{{ table }}" name="tabbed-tables-group" checked>
+          <label for="tab-{{ table }}">{{ table }} <a class="download-link" table_id="table-{{ table }}" style="color: blue; font-size: 10px; font-variant: small-caps">[CSV]</a></label>
+          <div class="content">
+            <table id="table-{{ table }}" class="js-sort-table">
               <thead>
                 <tr>
-                  {% for column in tables[table]['header'] %}
-                    {# looking for specific columns to sort as numbers will work for now but soon you'll need to pass the data type from the database as well #}
-                    {% if column.lower() in ['length', 'width', 'depth', 'x', 'y' ] %}
-                      <th class='js-sort-number'>{{ column }}</th>
+                  {% for column in tables[table]["header"] %}
+                    {# looking for specific columns to sort as numbers will work for now but soon you"ll need to pass the data type from the database as well #}
+                    {% if column.lower() in ["length", "width", "depth", "x", "y" ] %}
+                      <th class="js-sort-number">{{ column }}</th>
                     {% else %}
-                      <th class='js-sort-string'>{{ column }}</th>
+                      <th class="js-sort-string">{{ column }}</th>
                     {% endif %}
                   {% endfor %}
                 </tr>
               </thead>
               <tbody>
-                {% for row in tables[table]['data'] %}
+                {% for row in tables[table]["data"] %}
                   <tr>
                     {% for value in row %}
-                      <td>{{ value if value else '--' }}</td>
+                      <td>{{ value if value else "--" }}</td>
                     {% endfor %}
                   </tr>
                 {% endfor %}
