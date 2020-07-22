@@ -1,418 +1,468 @@
-window.onload = function() {
-  var samples = page.domain.samples;
-  var subject = page.domain.subject;
+/*jshint esversion: 7 */
+'use strict';
+
+/*** Conventions ***
+ALLCAPS - modules, constants
+PascalCase - namespaces, constructors, singletons
+camelCase - instances, fields
+_underscored - reserved keywords
+***/
+
+// App is the top-level namespace for everything else.
+// Note: Constructors based on functional inheritance pattern on pg 52 of
+// JavaScript: The Good Parts, by Douglas Crockford
+
+var APP = (function (_public) {
+  // App is designed as a singleton, meaning the "class" App and the object App
+  // are identical and unique. This could just be a straight object if there are
+  // no private variables, functions, etc. These comments and unused variables
+  // are training wheels - feel free to remove them once you're comfortable
+  // with how they work (and once the app's working).
+
+  // Imports & aliases
+  var domain = _public.Domain;
+
+  // Private variables & functions (not inherited)
+  var distance = function pythagorean (s, t) {
+    return Math.sqrt( (s.x - t.x) ** 2 + (s.y - t.y) ** 2);
+  };
+
+  // Public variables
+  // Enrich raw sample data with some calculated fields
+  domain.samples.forEach(function (s) {
+    s.size = s.length * s.width * s.depth;
+    s.size_cat = s.size < 50 ? "small" : s.size < 100 ? "medium" : "large";
+    s.distances = [ ];
+    domain.samples.forEach(function (t, i) {
+      s.distances[i] = distance(s, t);
+    });
+  });
+
+  return _public;
+})(APP || { });
+
+var APP = (function (_public) {
+  _public.Utils = {
+    checkForField: function (spec, field) {
+      if (spec[field] === undefined) {
+        throw {
+          name: "MissingFieldError",
+          message: "Object must include '" + field + "' field"
+        };
+      }
+    }
+  };
+
+  return _public;
+})(APP || { });
+
+var APP = (function (_public) {
+  _public.UI = {
+    XMLNS: "http://www.w3.org/2000/svg",
+
+    refresh: function () {
+      document.getElementById('viz-wrapper').innerHTML += "";
+    },
   
-  //// GLOBALS
-  // subject: parent of samples; holds colon-level information
-  // samples: array generated in the <script> block in the HTML template 
-  var viz = document.getElementById("viz");
-  var frame_width       = 1500;
-  var frame_height      = 400;
-  var conversion_factor = 10;  // 10 pixels per centimeter
-  var horizontal_offset = 20;
-  var vertical_offset   = 20;
+    setVisibility: function () {
+      // Compare the attributes of the samples against the filtering criteria in
+      // the sidebar. Logic that decides whether to draw or not draw sample.
+      // Form: (... OR ... OR ...) AND (... OR ... OR ...) AND ...
+      // The reason for this logical form is that each sample should show up if
+      // it matches any of the checkboxes within a group but only if each group
+      // has at least one match
+      APP.Domain.samples.forEach(
+        function (sample) {
+          var checked = { };
+          var checkbox_ids = 
+            [ "tissue_type_normal", "tissue_type_polyp", "tissue_type_adca",
+              "size_small", "size_medium", "size_large",
+              "phenotype_sessile", "phenotype_stalk",
+              "location_ascending", "location_transverse", "location_descending", "location_rectum"
+            ];
+          checkbox_ids.forEach( function(checkbox_id) {
+            checked[checkbox_id] = document.getElementById(checkbox_id).checked;
+          });
 
-  // Calculate sample size, size category (small/medium/large), and distance
-  // from other samples for each sample.
-  for (let i=0; i<samples.length; i++) {
-    samples[i].size = samples[i].length * samples[i].width * samples[i].depth;
-    samples[i].size_cat = samples[i].size < 50  ? "small"
-                        : samples[i].size < 100 ? "medium"
-                        : "large";
-    samples[i].distance = [];
-    for (let j=0; j<samples.length; j++) {
-      samples[i].distance[j] = (function(a,b) {
-        // two-dimensional distance function, i.e. Pythagorean formula
-        return Math.sqrt( Math.pow((a.x - b.x), 2) + Math.pow((a.y - b.y), 2) );
-      })(samples[i], samples[j]);
-    }
-  }
+          sample.visible =
+            // tissue type
+            ( (sample.tissue_type === "normal" && checked["tissue_type_normal"])
+               ||
+              (sample.tissue_type === "polyp"  && checked["tissue_type_polyp"])
+               ||
+              (sample.tissue_type === "adca"   && checked["tissue_type_adca"]) )
+            &&
+            // size
+            ( (sample.size_cat === "small"  && checked["size_small"])
+               ||
+              (sample.size_cat === "medium" && checked["size_medium"])
+               ||
+              (sample.size_cat === "large"  && checked["size_large"]) )
+            &&
+            // phenotype
+            ( (sample.phenotype === "sessile" && checked["phenotype_sessile"])
+               ||
+              (sample.phenotype === "stalk"   && checked["phenotype_stalk"])
+               ||
+              (sample.phenotype === "none")
+               ||
+              (sample.phenotype === "normal") )
+            &&
+            // location
+            ( (sample.location === "ascending"  && checked["location_ascending"])
+               ||
+              (sample.location === "transverse" && checked["location_transverse"])
+               ||
+              (sample.location === "descending" && checked["location_descending"])
+               ||
+              (sample.location === "rectum"     && checked["location_rectum"]) );
+        }
+      );
+    },
 
-  // SELECTION LOGIC
-  function setVisibility() {
-    // Compare the attributes of the samples against the filtering criteria in
-    // the sidebar. Logic that decides whether to draw or not draw sample.
-    // Form: (... OR ... OR ...) AND (... OR ... OR ...) AND ...
-    // The reason for this logical form is that each sample should show up if
-    // it matches any of the checkboxes within a group but only if each group
-    // has at least one match
-    for (let i=0; i<samples.length; i++) {
-      let sample = samples[i];
-      let checked = { };
-      let checkbox_ids = 
-        [ "tissue_type_normal", "tissue_type_polyp", "tissue_type_adca",
-          "size_small", "size_medium", "size_large",
-          "phenotype_sessile", "phenotype_stalk",
-          "location_ascending", "location_transverse", "location_descending", "location_rectum"
-        ];
-      checkbox_ids.forEach( checkbox_id => checked[checkbox_id] = document.getElementById(checkbox_id).checked );
+    Viz: function (spec) {
+      // Public fields & methods
+      spec.element = document.getElementById(spec.elementID);
 
-      sample.visible =
-        // tissue type
-        ( (sample.tissue_type === "normal" && checked["tissue_type_normal"])
-           ||
-          (sample.tissue_type === "polyp"  && checked["tissue_type_polyp"])
-           ||
-          (sample.tissue_type === "adca"   && checked["tissue_type_adca"]) )
-        &&
-        // size
-        ( (sample.size_cat === "small"  && checked["size_small"])
-           ||
-          (sample.size_cat === "medium" && checked["size_medium"])
-           ||
-          (sample.size_cat === "large"  && checked["size_large"]) )
-        &&
-        // phenotype
-        ( (sample.phenotype === "sessile" && checked["phenotype_sessile"])
-           ||
-          (sample.phenotype === "stalk"   && checked["phenotype_stalk"])
-           ||
-          (sample.phenotype === "none" ))
-        &&
-        // location
-        ( (sample.location === "ascending"  && checked["location_ascending"])
-           ||
-          (sample.location === "transverse" && checked["location_transverse"])
-           ||
-          (sample.location === "descending" && checked["location_descending"])
-           ||
-          (sample.location === "rectum"     && checked["location_rectum"]) );
-    }
-  }
+      var clearDistanceLines = function () {
+        var distance_lines = spec.element.querySelectorAll('line.distance_line');
+        distance_lines.forEach( line => spec.element.removeChild(line) );
+      };
+      spec.clearDistanceLines = clearDistanceLines;
 
-  function drawRulers() {
-    // Draw horizontal ruler
-    var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.classList.add("ruler_line");
-    line.setAttribute("x1", horizontal_offset);
-    line.setAttribute("y1", vertical_offset);
-    line.setAttribute("x2", frame_width);
-    line.setAttribute("y2", vertical_offset);
-    line.style = "stroke:gray; stroke-width:1";
-    viz.appendChild(line);
+      var update = function () {
+        APP.UI.pins.forEach( function (pin, i) {
+          // This implicitly counts on samples and pins matching by order,
+          // i.e. pin[n] represents sample[n].
+          if (APP.Domain.samples[i].visible) {
+            pin.show();
+          } else {
+            pin.hide();
+          }
+        });
+      };
+      spec.update = update;
 
-    for (let cm=1; cm < frame_width/conversion_factor; cm++) {
-      // Draw horizontal tick marks (the tertiary formula makes every tenth
-      // line twice as big and every hundredth line three times as big)
-      let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.classList.add("ruler_line");
-      line.setAttribute("x1", horizontal_offset + cm * conversion_factor);
-      line.setAttribute("y1", vertical_offset);
-      line.setAttribute("x2", horizontal_offset + cm * conversion_factor);
-      line.setAttribute("y2", vertical_offset +
-                              (cm % 100 == 0 ? 3.0 * conversion_factor :
-                               cm % 10 == 0  ? 2.0 * conversion_factor :
-                               cm % 5 == 0   ? 1.5 * conversion_factor :
-                                                     conversion_factor));
-      line.style = "stroke:gray; stroke-width:1";
-      viz.appendChild(line);
+      return spec;
+    },
 
-      // Draw distance labels
-      if (cm % conversion_factor == 0) {
-        let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", horizontal_offset + cm * conversion_factor - 7);
-        text.setAttribute("y", vertical_offset - 5);
-        text.style = "font-size:small";
-        text.innerHTML = cm;
-        viz.appendChild(text);
-      }
-    }
+    Pin: function (subject, sample) {
+      // Imports & aliases
+      var UI = APP.UI;
+      var viz = APP.UI.Viz;
 
-    // Draw vertical ruler
-    line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.classList.add("ruler_line");
-    line.setAttribute("x1", horizontal_offset);
-    line.setAttribute("y1", vertical_offset);
-    line.setAttribute("x2", horizontal_offset);
-    line.setAttribute("y2", frame_height);
-    line.style = "stroke:gray; stroke-width:1";
-    viz.appendChild(line);
+      // Create the return object
+      var pin = { };
+      pin.id = sample.id;
+      pin.cx = viz.horizontal_offset + (subject.colon_length - sample.x) * viz.conversion_factor;
+      pin.cy = viz.vertical_offset + sample.y * viz.conversion_factor;
+      pin.r = Math.log( sample.length * sample.width  * sample.depth );
+      pin.fill = 'gray';
+      pin.title = `${ sample.id } \n(${ sample.x }, ${ sample.y }) \n${ sample.length } x ${ sample.width } x ${ sample.depth } (${ (sample.length * sample.width * sample.depth) } mm³) \n${ sample.tissue_type }, ${ sample.phenotype }, ${ sample.location }`;
+      pin.distances = [ ];
+      sample['distances'].forEach(function (d, i) {
+        pin.distances[i] = d * viz.conversion_factor;
+      });
 
-    // Draw vertical tick marks
-    for (let cm=1; cm < frame_width / conversion_factor; cm++) {
-      let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.classList.add("ruler_line");
-      line.setAttribute("x1", horizontal_offset);
-      line.setAttribute("y1", vertical_offset + cm * conversion_factor);
-      line.setAttribute("x2", horizontal_offset +
-                              (cm % 100 == 0 ? 3 * conversion_factor :
-                               cm % 10 == 0 ? 2  * conversion_factor :
-                               cm % 5 == 0 ? 1.5 * conversion_factor :
-                                                   conversion_factor));
-      line.setAttribute("y2", vertical_offset + cm * conversion_factor);
-      line.style = "stroke:gray; stroke-width:1";
-      viz.appendChild(line);
-
-      // Draw distance labels
-      if (cm % conversion_factor == 0) {
-        let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", 2);  // slightly offset from frame
-        text.setAttribute("y", vertical_offset + cm * conversion_factor + 5);
-        text.style = "font-size:small";
-        text.innerHTML = cm;
-        viz.appendChild(text);
-      }
-    }
-  }
-
-  function drawSections() {
-    // Draw vertical lines to show section boundaries of colon
-    var sections = [ "rectum" ,"descending" ,"transverse" ,"ascending" ,"colon" ];
-
-    for (let i=0; i<sections.length; i++) {
-      // Set up a couple of helper variables to make syntax simpler later
-      let section = page.domain.subject[sections[i]];
-      let prev_section = i > 0 ? page.domain.subject.sections[sections[i-1]] : 0;
-
-      // null/undefined guard
-      if (!section)
-        continue;
-
-      let line = document.createElement("line");
-      line.setAttribute("x1", horizontal_offset + section * conversion_factor);
-      line.setAttribute("y1", vertical_offset);
-      line.setAttribute("x2", horizontal_offset + section * conversion_factor);
-      line.setAttribute("y2", frame_height);
-      line.style = "stroke:gray; stroke-dasharray: 2; stroke-width:2";
-      viz.appendChild(line);
-
-      let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      // Left-justify the labels in their respective sections. If we"re not at
-      // the first section in the array and we"re not missing the previous line,
-      // then use the previous line as the guide.
-      text.setAttribute("x", horizontal_offset + 4 + prev_section * conversion_factor);
-      text.setAttribute("y", frame_height - 4);
-      text.innerHTML = sections[i].substring(0, sections[i].indexOf("_"));
-      text.style = "font-size:small";
-      viz.appendChild(text);
-    }
-  }
-
-  function drawPins() {
-    for (let i=0; i<samples.length; i++) {
-      let circle = document.createElement("circle");
-      circle.setAttribute("id", samples[i].id);
-      circle.setAttribute("tissue_type", samples[i].tissue_type);
-      circle.setAttribute("phenotype", samples[i].phenotype);
-      circle.setAttribute("location", samples[i].location);
-      circle.setAttribute("length", samples[i].length);
-      circle.setAttribute("width", samples[i].width);
-      circle.setAttribute("depth", samples[i].depth);
-      circle.setAttribute("cx", horizontal_offset + (subject.sections[4].position - samples[i].x) * conversion_factor);
-      circle.setAttribute("cy", vertical_offset + samples[i].y * conversion_factor);
-      circle.setAttribute("r", Math.log ( (samples[i].length * samples[i].width * samples[i].depth) ) );
-      circle.setAttribute("fill", "gray");
+      // Create DOM element & set attributes
+      var circle = document.createElementNS(UI.XMLNS, 'circle');
+      circle.setAttributeNS(UI.XMLNS, 'id',    pin.id);
+      circle.setAttributeNS(UI.XMLNS, 'cx',    pin.cx);
+      circle.setAttributeNS(UI.XMLNS, 'cy',    pin.cy);
+      circle.setAttributeNS(UI.XMLNS, 'r',     pin.r);
+      circle.setAttributeNS(UI.XMLNS, 'fill',  pin.fill);
+      circle.setAttributeNS(UI.XMLNS, 'title', pin.title);
 
       // Set the text of the pop-up helper that appears when hovering over a
       // sample (through the "title" attribute of the circle element)
-      let title = document.createElement("title");
-      title.innerHTML = samples[i].id + '\n'
-                      + '(' + samples[i].x + ', ' + samples[i].y + ')' + '\n'
-                      + samples[i].length + ' x ' + samples[i].width + ' x ' + samples[i].depth + ' '
-                      + '(' + (samples[i].length * samples[i].width * samples[i].depth) + ' mm³)' + '\n'
-                      + samples[i].tissue_type + ', ' + samples[i].phenotype + ', ' + samples[i].location;
-
+      var title = document.createElementNS(UI.XMLNS, 'title');
+      title.innerHTML = pin.title;
       circle.appendChild(title);
-      viz.appendChild(circle);
-    }
-  }
+      viz.element.appendChild(circle);
+      pin.element = circle;
 
-  function drawDistance(sample_id) {
-    for (let i=0; i<samples.length; i++) {
-      // Only draw lines from this sample to others (not all to all)
-      if (samples[i].id !== sample_id) {
-        continue;
-      }
+      var hide = function () {
+        document.getElementById(pin.id).style.display = "none";
+      };
+      pin.hide = hide;
 
-      // Clear existing distance lines
-      distance_lines = viz.querySelectorAll("line.distance_line");
-      for (let j=0; j<distance_lines.length; j++) {
-        viz.removeChild(distance_lines[j]);
-      }
+      var show = function () {
+        document.getElementById(pin.id).style.display = "inline";
+      };
+      pin.show = show;
 
-      // Only draw lines to samples that are currently visible
-      for (let j=0; j<samples.length; j++) {
-        if (!samples[j].visible) {
-          continue;
-        }
+      var drawDistanceLines = function () {
+        var subject = APP.Domain.subject;
 
-        line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.classList.add("distance_line");
-        line.setAttribute("x1", horizontal_offset + samples[i].x * conversion_factor);
-        line.setAttribute("y1", vertical_offset   + samples[i].y * conversion_factor);
-        line.setAttribute("x2", horizontal_offset + samples[j].x * conversion_factor);
-        line.setAttribute("y2", vertical_offset   + samples[j].y * conversion_factor);
-        line.style = "stroke:gray; stroke-dasharray: 2; stroke-width:2";
-        viz.appendChild(line);
+        // Erase already visible distance lines, if any
+        viz.clearDistanceLines();
 
-        title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-        title.innerHTML = ( Number(samples[i].distance[j]) / subject["colon_length"]).toFixed(1) + " cm"; // fix: 108 is A014"s colon length
-        line.appendChild(title);
-      }
-    }
-  }
+        // Only draw lines to pins that are currently visible
+        if (!UI.pins)
+          return;
 
-  function updatePins() {
-    for (let i=0; i<samples.length; i++) {
-      var pin = viz.getElementById(samples[i].id);
+        APP.UI.pins.forEach(function (p, i) {
+          // This implicitly counts on samples and pins matching by order, i.e.
+          // pin[n] represents sample[n]
+          if (!APP.Domain.samples[i].visible)
+            return;
 
-      if (pin) {
-        pin.style.display = samples[i].visible ? "" : "none";
-      }
-    }
-  }
+          var line = document.createElementNS(UI.XMLNS, 'line');
+          line.classList.add('distance_line');
+          line.setAttribute('x1', pin.cx);
+          line.setAttribute('y1', pin.cy);
+          line.setAttribute('x2', p.cx  );
+          line.setAttribute('y2', p.cy  );
+          line.style = 'stroke:gray; stroke-dasharray: 2; stroke-width:2';
+          viz.element.appendChild(line);
 
-  function updateTable() {
-    // Purpose  : Toggle each row"s visibility depending on which filters are selected.
-    // Structure: A three-level *for* loop
-    // Workings : At the innermost level of the *for* loop, a decision is made whether to hide
-    //            or show the current row by comparing the first cell in the row, which should
-    //            always be the sample name, to the sample name in the "samples"
-    //            object.
-    // Notes    : * I have created "table", "row", and "sample" variables to hold the current
-    //            iteration"s object at each level in the loop (rather than using potentially
-    //            confusing array-indexing syntax). Unfortunately, JavaScript doesn"t have a
-    //            for-each construct like many other scripting languages, so I"m having to do
-    //            it in a separate line.
-    //            * Previously, I tried dynamically adding and removing rows by creating a row
-    //            object, creating cell objects, appending them to the row object, and appending
-    //            it to the table. I abandoned this approach because, aside from the complexity
-    //            of the code required to do this, this approach has the significant downside of
-    //            requiring the JavaScript code to add table columns in the same order as the tables
-    //            themselves did originally; and since both the number and contents of the tables
-    //            can be expected to change frequently during development, this would quickly
-    //            become a maintenance headache.
-    // Ideas    : Dynamically figure out which cell to look at for the sample name based on the
-    //            column headers; 
-    tables = document.querySelectorAll("footer table");
-    for (let i=0; i<tables.length; i++) {
-      table = tables[i];
-
-      for (let j=0; j<table.rows.length; j++) {
-        row = table.rows[j];
-
-        if (row.cells.length === 0)
-          continue;
-
-        for (let k=0; k<samples.length; k++) {
-          sample = samples[k];
-
-          if (row.cells[0].innerHTML === sample.id /*(1)*/) { 
-            row.style.display = sample.visible ? "" : "none"; /*(2)*/
-          }
-        }
-      }
-    }
-    // Footnotes:
-    // (1) Resist the urge to combine this logical test with the one in the code to be executed, i.e.:
-    //     row.style.display = row.cells[0].innerHTML === sample.id && sample.visible ? "" : "none"
-    //     I did this at first and couldn"t understand why the entire table was being hidden.
-    //     It"s because for most samples and most rows, the first test will fail (and should), since
-    //     there are N rows and N samples, thus N^2 comparisons, only one of which is a match. But
-    //     by combining the two logical conditions in the variable assigment, you are acting on each
-    //     row N^2 times and in almost every case hiding the row when you shouldn"t be: not because
-    //     the sample is hidden, but because the sample name in the row doesn"t match the name of the
-    //     sample in the current iteration of the loop. The one row that passes the first logical test
-    //     will be hidden by subsequent comparisons to other samples that do not have a matching sample
-    //     name. By moving the first logical condition into the *if* check, the row is only acted on once, when the matching sample
-    //     is encountered. Forgive the long explanation, but it took a long time to reason this one out.
-    // (2) Do not replace the empty string ("") with "block". It will cause the entire row to be inserted
-    //     into the first cell of the table (for reasons I don't understand).
-  }
-
-  function highlightRow(sample_id) {
-    // Highlight the row in the table corresponding to sample and reset all other rows to default style
-    table_rows = document.querySelectorAll("table tr");
-    for (let j=0; j<table_rows.length; j++) {
-      table_rows[j].className = table_rows[j].children[0].innerHTML === sample_id ? "highlighted" : "";
-    }
-  }
-  
-  function downloadCSV(table_id) {
-    // Purpose: Push a comma-separated value file containing the currently
-    // selected rows of the table to the user.
-    var table
-       ,csv_line_array
-       ,cell_array
-       ,line
-       ,csv_text
-       ,element;
-
-    table = document.getElementById(table_id);
-    csv_line_array = Array();
-    for (let i=0; i<table.rows.length; i++) {
-      cell_array = Array();
-
-      // Don't put hidden rows in export
-      if (table.rows[i].style.display === "none") {
-        continue;
-      }
-
-      // Do put all visible rows in export
-      for (let j=0; j<table.rows[i].cells.length; j++) {
-        cell_array.push(table.rows[i].cells[j].innerHTML);
-      }
-      line = cell_array.join(",");
-      csv_line_array.push(line);
-    }
-    csv_text = csv_line_array.join("\n");
-
-    // Create an invisible link, click it, and remove it
-    element = document.createElement("a");
-    element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text));
-    element.setAttribute("download", table_id + '-' + subject['id'] + '.csv'); //fix
-    element.style.display = "none";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  }
-
-  function attachEvents() {
-    pins = document.querySelectorAll("svg#viz circle"); // viz.querySelectorAll("circle")
-    for (let i=0; i<pins.length; i++) {
-      pins[i].addEventListener("mouseover",
-        function() {
-          drawDistance(this.id);
-          highlightRow(this.id);
+          var title = document.createElementNS(UI.XMLNS, 'title');
+          title.innerHTML = ( Number(pin.distances[i]) / subject.colon_length).toFixed(1) + ' cm';
+          line.appendChild(title);
         });
-    }
+      };
+      pin.drawDistanceLines = drawDistanceLines;
 
-    checkboxes = document.querySelectorAll("input[type='checkbox']");
-    for (let i=0; i<checkboxes.length; i++) {
-      checkboxes[i].addEventListener("click",
+      return pin;
+    },
+
+    Section: function (section) {
+    //2020-07-22 Wed 10:40 AM - Sections are showing up backwards - need to FIX
+      // Imports & aliases
+      var viz = APP.UI.Viz;
+      if (!section.position)
+        return section;
+
+      // 2020-07-22 Wed 10:43 AM - The horizontal positions of the different
+      // sections are in reverse order in the database, hence the subtraction
+      // from the colon length to invert their position on the graphic. Once
+      // they're fixed, this code will be a bit simpler.
+      section.x1 = viz.horizontal_offset + (APP.Domain.subject.colon_length - section.position) * viz.conversion_factor;
+      section.y1 = viz.vertical_offset;
+      section.x2 = section.x1;
+      section.y2 = viz.frame_height;
+
+      var line = document.createElement('line');
+      line.setAttribute('x1', section.x1)
+      line.setAttribute('y1', section.y1);
+      line.setAttribute('x2', section.x2);
+      line.setAttribute('y2', section.y2);
+      line.style = 'stroke:gray; stroke-dasharray: 2; stroke-width:2';
+      viz.element.appendChild(line);
+
+      return section;
+    },
+
+    SectionLabel: function (label) {
+      // Imports & aliases
+      var viz = APP.UI.Viz;
+
+      if (!label.position)
+        return label;
+
+      // 2020-07-22 Wed 10:43 AM - The horizontal positions of the different
+      // sections are in reverse order in the database, hence the subtraction
+      // from the colon length to invert the position of their labels on the
+      // graphic. Once they're fixed, this code will be a bit simpler.
+      label.x = viz.horizontal_offset + 4 + (APP.Domain.subject.colon_length - label.position) * viz.conversion_factor;
+      label.y = viz.frame_height - 4;
+
+      var textElement = document.createElementNS(APP.UI.XMLNS, 'text');
+      textElement.setAttribute('x', label.x);
+      textElement.setAttribute('y', label.y);
+      textElement.innerHTML = label.name;
+      textElement.style = 'font-size: small';
+      viz.element.appendChild(textElement);
+
+      return label;
+    },
+
+    HorizontalRuler: function (spec) {
+      // 2020-07-21 Tue 11:00 PM - rulers, tick marks, and labels can be moved
+      // under a <g> group in SVG and shown/hidden as a group
+
+      // Imports & aliases
+      var UI = APP.UI;
+      var viz = APP.UI.Viz;
+
+      var rule = document.createElementNS(UI.XMLNS, 'line');
+      rule.setAttribute("x1", viz.horizontal_offset);
+      rule.setAttribute("y1", viz.vertical_offset);
+      rule.setAttribute("x2", viz.frame_width);
+      rule.setAttribute("y2", viz.vertical_offset);
+      rule.style = 'stroke:gray; stroke-width:1';
+      viz.element.appendChild(rule);
+
+      for (let cm=1; cm < viz.frame_width / viz.conversion_factor; cm++) {
+        // The tertiary formula makes every tenth line twice as big and every
+        // hundredth line three times as big)
+        var tick = document.createElementNS(UI.XMLNS, 'line');
+        tick.setAttribute("x1", viz.horizontal_offset + cm * viz.conversion_factor);
+        tick.setAttribute("y1", viz.vertical_offset);
+        tick.setAttribute("x2", viz.horizontal_offset + cm * viz.conversion_factor);
+        tick.setAttribute("y2", viz.vertical_offset +
+                                (cm % 100 == 0 ? 3.0 * viz.conversion_factor :
+                                 cm % 10 == 0  ? 2.0 * viz.conversion_factor :
+                                 cm % 5 == 0   ? 1.5 * viz.conversion_factor :
+                                                       viz.conversion_factor));
+        tick.style = 'stroke:gray; stroke-width:1';
+        viz.element.appendChild(tick);
+
+        // Draw distance labels
+        if (cm % viz.conversion_factor === 0) {
+          var text = document.createElementNS(UI.XMLNS, 'text');
+          text.setAttribute("x", viz.horizontal_offset + cm * viz.conversion_factor - 7);
+          text.setAttribute("y", viz.vertical_offset - 5);
+          text.style = 'font-size:small';
+          text.innerHTML = cm;
+          viz.element.appendChild(text);
+        }
+      }
+    },
+
+    VerticalRuler: function () {
+      // Imports & aliases
+      var UI = APP.UI;
+      var viz = APP.UI.Viz;
+
+      var rule = document.createElementNS(UI.XMLNS, 'line');
+      rule.setAttribute("x1", viz.horizontal_offset);
+      rule.setAttribute("y1", viz.vertical_offset);
+      rule.setAttribute("x2", viz.horizontal_offset);
+      rule.setAttribute("y2", viz.frame_height);
+      rule.style = 'stroke:gray; stroke-width:1';
+      viz.element.appendChild(rule);
+
+      for (let cm=1; cm < viz.frame_width / viz.conversion_factor; cm++) {
+        // The tertiary formula makes every tenth line twice as big and every
+        // hundredth line three times as big)
+        var tick = document.createElementNS(UI.XMLNS, 'line');
+        tick.setAttribute("x1", viz.horizontal_offset);
+        tick.setAttribute("y1", viz.vertical_offset + cm * viz.conversion_factor);
+        tick.setAttribute("x2", viz.horizontal_offset +
+                                (cm % 100 == 0 ? 3 * viz.conversion_factor :
+                                 cm % 10 == 0 ? 2  * viz.conversion_factor :
+                                 cm % 5 == 0 ? 1.5 * viz.conversion_factor :
+                                                     viz.conversion_factor));
+        tick.setAttribute("y2", viz.vertical_offset + cm * viz.conversion_factor);
+        tick.style = "stroke:gray; stroke-width:1";
+        viz.element.appendChild(tick);
+
+        // Draw distance labels
+        if (cm % viz.conversion_factor === 0) {
+          var text = document.createElementNS(UI.XMLNS, 'text');
+          text.setAttribute("x", 2);  // slightly offset from frame
+          text.setAttribute("y", viz.vertical_offset + cm * viz.conversion_factor + 5);
+          text.style = 'font-size:small';
+          text.innerHTML = cm;
+          viz.element.appendChild(text);
+        }
+      }
+    },
+
+    Table: function (tableElement) {
+      // Return variable
+      var table = {
+        element: tableElement
+      };
+
+      var update = function () {
+        // Toggle each row's visibility depending on which filters are selected.
+        // Initially tried dynamically adding and removing rows - too complex
+        // and error-prone; easier just to hide & show them as needed.
+        for (var row of table.element.rows)
+          if (row.cells.length)
+            for (var sample of APP.Domain.samples)
+              if (row.cells[0].innerHTML === sample.id) // (1)
+                row.style.display = sample.visible ? "" : "none"; // (2)
+        // Footnotes:
+        // (1) Resist the urge to combine this logical test with the one in the
+        //     code to be executed, i.e.:
+        //     row.style.display = row.cells[0].innerHTML === sample.id && sample.visible ? '' : 'none'
+        //     I did this at first and couldn't understand why the entire table was being hidden.
+        //     It's because for most samples and most rows, the first test will fail (and should), since
+        //     there are N rows and N samples, thus N^2 comparisons, only one of which is a match. But
+        //     by combining the two logical conditions in the variable assigment, you are acting on each
+        //     row N^2 times and in almost every case hiding the row when you shouldn't be, not because
+        //     the sample is hidden, but because the sample name in the row doesn't match the name of the
+        //     sample in the current iteration of the loop. The one row that passes the first logical test
+        //     will be hidden by subsequent comparisons to other samples that do not have a matching sample
+        //     name. By moving the first logical condition into the *if* check, the row is only acted on once, when the matching sample
+        //     is encountered.
+        // (2) Do not replace the empty string ('') with 'block'. It will cause the entire row to be inserted
+        //     into the first cell of the table (for reasons I don't understand).
+      };
+      table.update = update;
+
+      var highlightRows = function (sample_id) {
+        var rows = table.element.querySelectorAll("table tr");
+        rows.forEach( row => row.className = row.children[0].innerHTML === sample_id ? "highlighted" : "");
+      };
+      table.highlightRows = highlightRows;
+
+      var download = function () {
+        var line_array = [], text;
+
+        for (let row of table.element.rows) {
+          let cell_array = [];
+
+          if (row.style.display === "none")
+            continue;
+
+          for (let cell of row.cells)
+            cell_array.push(cell.innerHTML);
+
+          let line = cell_array.join(',');
+          line_array.push(line);
+        }
+        text = line_array.join('\n');
+
+        var a = document.createElement('a');
+        a.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        a.setAttribute('download', APP.Domain.subject.id + "-" + table.element.getAttribute("content") + '.csv');
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+      table.download = download;
+
+      return table;
+    
+    }
+  };
+
+  return _public;
+})(APP || { });
+
+
+/*
+
+    function attachEvents() {
+      var csv_links = document.querySelectorAll('footer .tab label a.download-link');
+      for (let i=0; i<csv_links.length; i++) {
+        csv_links[i].addEventListener('click', (function(id) {
+          return function(e) {
+            downloadCSV(id);
+          };
+        })(csv_links[i].getAttribute('table_id')));
+      }
+
+    var addEventListener = function () {
+      var element = document.getElementById(that.id);
+      element.addEventListener(
+        "mouseover",
         function() {
-          setVisibility();
-          updatePins();
-          updateTable();
-          document.getElementById("viz-wrapper").innerHTML += ""; // refresh
+          alert('hi');
+          //that.drawDistance();
+          //highlightRow(this.id);
         });
-    }
+    };
+    that.addEventListener = addEventListener;
 
-    csv_links = document.querySelectorAll("footer .tab label a.download-link");
-    for (let i=0; i<csv_links.length; i++) {
-      csv_links[i].addEventListener("click", (function(id) {
-        return function(e) {
-          downloadCSV(id);
-        };
-      })(csv_links[i].getAttribute("table_id")));
-    }
-  }
+    return that;
+  },
 
-  // PAGE LOAD
-  // Determine sample visibility based on filter selection
-  setVisibility();
-
-  // Draw the elements of the visualization
-  drawRulers();
-  drawSections();
-  drawPins();
-
-  // Populate the table
-  updateTable();
-
-  document.getElementById("viz-wrapper").innerHTML += ""; // refresh
-
-  // Attach events to filters, pins, links, etc.
-  attachEvents();
 };
 
+*/

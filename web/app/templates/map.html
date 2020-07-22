@@ -9,42 +9,110 @@
     {% endif %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}">
     <script type="text/javascript">
-      // figure out a way to put domain in the global *app* variable
-      var page = {
-        domain: {
-        {% for other_subject in other_subjects["data"] %}
-          {% if other_subject.subject_bk == subject %}
-            //var subject = {
-            subject: {
-              id            : "{{ other_subject.subject_bk }}",
-              disease_status: "{{ other_subject.disease_status }}",
-              sections      : [ { name: "rectum"    , position: {{ other_subject.rectum_position     if other_subject.rectum_position     else "undefined" }} },
-                                { name: "descending", position: {{ other_subject.descending_position if other_subject.descending_position else "undefined" }} },
-                                { name: "transverse", position: {{ other_subject.transverse_position if other_subject.transverse_position else "undefined" }} },
-                                { name: "ascending" , position: {{ other_subject.ascending_position  if other_subject.ascending_position  else "undefined" }} },
-                                { name: "colon"     , position: {{ other_subject.colon_length        if other_subject.colon_length        else "undefined" }} } ]
-            //};
-            },
-          {% endif %}
-        {% endfor %}
+      window.onload = function () {
+        var domain = APP.Domain;
+        var subject = domain.subject;
+        var samples = domain.samples;
 
-            //var samples = [
-            samples: [
-              {% for sample in tables["clinical"]["data"] %}
-                { id          : "{{ sample.sample_bk }}",
-                  length     : {{ sample.size_length }},
-                  width      : {{ sample.size_width }},
-                  depth      : {{ sample.size_depth }},
-                  x          : {{ sample.x_coord }},
-                  y          : {{ sample.y_coord }},
-                  tissue_type: "{{ sample.stage.lower() if sample.stage else 'none' }}",
-                  phenotype  : "{{ sample.phenotype.lower() if sample.phenotype else 'none' }}",
-                  location   : "{{ sample.organ_piece.lower() if sample.organ_piece else 'none' }}" },
-              {% endfor %}
-            ]
-          //;
-        }
+        var UI = APP.UI;
+        UI.Viz = UI.Viz({ elementID        : "viz",
+                          frame_width      : 1500,
+                          frame_height     : 400,
+                          conversion_factor: 10,
+                          horizontal_offset: 20,
+                          vertical_offset  : 20 });
+        UI.HorizontalRuler();
+        UI.VerticalRuler();
+        subject.sections.forEach(
+          function (section) {
+            UI.Section( section );
+            UI.SectionLabel( section );
+          }
+        );
+
+        var pins = UI.pins = [ ];
+        samples.forEach( sample => pins.push( UI.Pin( subject, sample ) ) );
+
+        var tables = UI.tables = [ ];
+        document.querySelectorAll('footer table').forEach( element => tables.push( UI.Table(element))); 
+
+        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach( function (checkbox) {
+          checkbox.addEventListener('click', UI.setVisibility);
+          checkbox.addEventListener('click', UI.Viz.update);
+          tables.forEach(
+            table => checkbox.addEventListener('click', table.update) );
+        //    checkbox.addEventListener('click', drawDistance);
+        });
+
+        APP.UI.setVisibility();
+        APP.UI.refresh();
+
+        pins.forEach( function(pin, i) {
+          pin.element = document.getElementById(pin.id);
+          pin.element.addEventListener("mouseover",
+            function (e) {
+              console.log(pin.id);
+              pin.drawDistanceLines();
+              UI.tables.forEach(
+                table => table.highlightRows(pin.id)
+              );
+            }
+          );
+        });
+
+        var links = document.querySelectorAll("footer .tab label a.download-link");
+        links.forEach(
+          link => link.addEventListener("click",
+            e => UI.tables.forEach(
+              function (table) {
+                if (table.element.id === link.getAttribute("table_id"))
+                  return table.download();
+              }
+            )
+          )
+        );
+
+        return;
       };
+    </script>
+
+    <script type="text/javascript">
+      var APP = (function (spec, _protected) {
+        return {
+          Domain: {
+          {% for other_subject in other_subjects["data"] %}
+            {% if other_subject.subject_bk == subject %}
+              subject: {
+                id            : "{{ other_subject.subject_bk }}",
+                disease_status: "{{ other_subject.disease_status }}",
+                colon_length  : {{ other_subject.colon_length        if other_subject.colon_length        else "undefined" }},
+                sections      : [ { name: "rectum"    , position: {{ other_subject.rectum_position     if other_subject.rectum_position     else "undefined" }} },
+                                  { name: "descending", position: {{ other_subject.descending_position if other_subject.descending_position else "undefined" }} },
+                                  { name: "transverse", position: {{ other_subject.transverse_position if other_subject.transverse_position else "undefined" }} },
+                                  { name: "ascending" , position: {{ other_subject.ascending_position  if other_subject.ascending_position  else "undefined" }} } ]
+              },
+            {% endif %}
+          {% endfor %}
+
+              samples: [
+                {% for sample in tables["clinical"]["data"] %}
+                  { id          : "{{ sample.sample_bk }}",
+                    length     : {{ sample.size_length }},
+                    width      : {{ sample.size_width }},
+                    depth      : {{ sample.size_depth }},
+                    x          : {{ sample.x_coord }},
+                    y          : {{ sample.y_coord }},
+                    tissue_type: "{{ sample.stage.lower() if sample.stage else 'none' }}",
+                    phenotype  : "{{ sample.phenotype.lower() if sample.phenotype else 'none' }}",
+                    location   : "{{ sample.organ_piece.lower() if sample.organ_piece else 'none' }}" },
+                {% endfor %}
+              ]
+          }
+        }
+      })({ }, APP || { });
+
+      var stop = 'ok'; //just a statement I can put a breakpoint on
     </script>
     <script type="text/javascript" src="{{ url_for("static", filename="js/script.js") }}"></script>
     <script type="text/javascript" src="{{ url_for("static", filename="js/lib/sort-table.js") }}"></script>
@@ -108,7 +176,7 @@
           <input type="radio" id="tab-{{ table }}" name="tabbed-tables-group" checked>
           <label for="tab-{{ table }}">{{ table }} <a class="download-link" table_id="table-{{ table }}" style="color: blue; font-size: 10px; font-variant: small-caps">[CSV]</a></label>
           <div class="content">
-            <table id="table-{{ table }}" class="js-sort-table">
+            <table id="table-{{ table }}" class="js-sort-table" content="{{ table }}">
               <thead>
                 <tr>
                   {% for column in tables[table]["header"] %}
