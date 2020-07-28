@@ -1,60 +1,27 @@
 /*jshint esversion: 7 */
 'use strict';
 
-/*** Conventions ***
-ALLCAPS - modules, constants
-PascalCase - namespaces, constructors, singletons
-camelCase - instances, fields
-_underscored - reserved keywords
-***/
+/*
+  Naming Conventions
+  - ALLCAPS: modules, constants
+  - PascalCase: namespaces, constructors, singletons
+  - camelCase: instances, fields
+  - _underscored: reserved keywords
 
-// App is the top-level namespace for everything else.
-// Note: Constructors based on functional inheritance pattern on pg 52 of
-// JavaScript: The Good Parts, by Douglas Crockford
-
-var APP = (function (_public) {
-  // App is designed as a singleton, meaning the "class" App and the object App
-  // are identical and unique. This could just be a straight object if there are
-  // no private variables, functions, etc. These comments and unused variables
-  // are training wheels - feel free to remove them once you're comfortable
-  // with how they work (and once the app's working).
-
-  // Imports & aliases
-  var domain = _public.Domain;
-
-  // Private variables & functions (not inherited)
-  var distance = function pythagorean (s, t) {
-    return Math.sqrt( (s.x - t.x) ** 2 + (s.y - t.y) ** 2);
-  };
-
-  // Public variables
-  // Enrich raw sample data with some calculated fields
-  domain.samples.forEach(function (s) {
-    s.size = s.length * s.width * s.depth;
-    s.size_cat = s.size < 50 ? "small" : s.size < 100 ? "medium" : "large";
-    s.distances = [ ];
-    domain.samples.forEach(function (t, i) {
-      s.distances[i] = distance(s, t);
-    });
-  });
-
-  return _public;
-})(APP || { });
-
-var APP = (function (_public) {
-  _public.Utils = {
-    checkForField: function (spec, field) {
-      if (spec[field] === undefined) {
-        throw {
-          name: "MissingFieldError",
-          message: "Object must include '" + field + "' field"
-        };
-      }
-    }
-  };
-
-  return _public;
-})(APP || { });
+  App is the top-level namespace for everything else. It is designed as a
+  singleton, meaning the "class" App and the object App are identical and
+  unique. The structure of the code that builds the APP object is important:
+    var APP = ... --> declaration & assignment
+    (function (_public) { ... } )() --> immediately-invoked function expression
+    (APP || { }) --> passing itself (or an empty object) to itself as parameter
+  The combination of the declaration & assignment to APP and the passing of
+  APP as a parameter to a function whose result will be assigned to APP
+  serve to export and import, respectively, the variable APP, thus augmenting
+  a single global variable that contains all of the application logic. The
+  immediately-invoked function expression (IIFE) returns a function that
+  captures in a closure the private variables of the application logic. The
+  returned variable is the public interface to the app.
+*/
 
 var APP = (function (_public) {
   _public.UI = {
@@ -227,7 +194,6 @@ var APP = (function (_public) {
     },
 
     Section: function (section) {
-    //2020-07-22 Wed 10:40 AM - Sections are showing up backwards - need to FIX
       // Imports & aliases
       var viz = APP.UI.Viz;
       if (!section.position)
@@ -435,34 +401,3 @@ var APP = (function (_public) {
   return _public;
 })(APP || { });
 
-
-/*
-
-    function attachEvents() {
-      var csv_links = document.querySelectorAll('footer .tab label a.download-link');
-      for (let i=0; i<csv_links.length; i++) {
-        csv_links[i].addEventListener('click', (function(id) {
-          return function(e) {
-            downloadCSV(id);
-          };
-        })(csv_links[i].getAttribute('table_id')));
-      }
-
-    var addEventListener = function () {
-      var element = document.getElementById(that.id);
-      element.addEventListener(
-        "mouseover",
-        function() {
-          alert('hi');
-          //that.drawDistance();
-          //highlightRow(this.id);
-        });
-    };
-    that.addEventListener = addEventListener;
-
-    return that;
-  },
-
-};
-
-*/
