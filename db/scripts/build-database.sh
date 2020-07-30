@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+# Exit on error
+set -e
+
 # Run untracked config script to set environment variables, download data, scrub PHI, etc.
 source config.sh
 
