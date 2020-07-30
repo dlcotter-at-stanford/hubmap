@@ -3,9 +3,6 @@
 # Exit on error
 set -e
 
-# Run untracked config script to set environment variables, download data, scrub PHI, etc.
-source config.sh
-
 # The above line requires that this script be called from within the same
 # directory as config.sh, which is not always convenient. I found a solution
 # on Stack Overflow for Bash, which doesn't work for zsh, but may be adaptable:
@@ -87,4 +84,4 @@ psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/schemas/m
 
 # Security settings
 psql -q -h localhost -d biolab   -U postgres -f $BASE_DIR/sql/database/roles/role.sql
-
+psql -q -h localhost -d biolab   -U postgres -c "alter user reader with password '$READER_PW'"
