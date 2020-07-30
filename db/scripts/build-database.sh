@@ -20,15 +20,8 @@ else
   echo "Using cached copy of sample tracker"
 fi
 
-# Scrub PHI
-# zsh doesn't do word splitting, hence the slightly unorthodox use of eval below
-eval NAMES="($PHI)"
-for NAME in $NAMES; do
-  # Delete all lines containing patient names (I couldn't figure out a single-
-  # line regex that would work with sed, but I'm sure it's possible).
-  # -i means "make changes in place," empty-string arg means don't create a backup
-  sed -i "" -e "/$NAME/d" $DATA_DIR/sample-tracker.tsv;
-done
+# Delete all lines containing patient names
+sed --in-place --regexp-extended "/$PHI/d" ../data/sample-tracker.tsv
 
 # Build database one object at a time, then load the data. Each SQL file is
 # named after the type of object (database, schema, etc.) except for tables and
