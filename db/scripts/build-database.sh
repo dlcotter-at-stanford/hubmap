@@ -1,14 +1,10 @@
-#!/bin/zsh
+#!/bin/zsh # --verbose -x
 
 # Exit on error
 set -e
 
-# The above line requires that this script be called from within the same
-# directory as config.sh, which is not always convenient. I found a solution
-# on Stack Overflow for Bash, which doesn't work for zsh, but may be adaptable:
-# DIR="$( cd "$( dirname "${ZSH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-# echo $DIR
-# exit
+# Check whether environment variables are set
+if [ -z $DATA_DIR ]; then echo "ERROR: Environment variables not found" && exit 2; fi
 
 # Fetch frequently changing data from live sources
 if [ $DOWNLOAD_SAMPLE_TRACKER -eq 1 ]; then
@@ -17,8 +13,12 @@ else
   echo "Using cached copy of sample tracker"
 fi
 
-# Delete all lines containing patient names
-sed --in-place --regexp-extended "/$PHI/d" ../data/sample-tracker.tsv
+# Delete all lines containing patient names (-E to use extended regexp)
+# Note: Fluky differences between sed's behavior on my local OS X environment
+# and the Debian production environment in which it runs wasted a lot of time
+# debugging. The following command works in both environments, unlike the ones
+# I tried with -i/--in-place and --regexp-extended.
+sed -E '/^(EP|ES|JC|JP|NBM)/d' ../data/sample-tracker-raw.tsv > ../data/sample-tracker.tsv
 
 # Build database one object at a time, then load the data. Each SQL file is
 # named after the type of object (database, schema, etc.) except for tables and
