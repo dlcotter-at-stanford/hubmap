@@ -17,5 +17,22 @@ create table core.sample
   ,dysplasia_cat  varchar(100)
   ,dysplasia_pct  integer
   ,notes          varchar(200)
-  ,vap_names      varchar(100))
+  ,vap_names      varchar(100)
+  ,atacseq_bulk   boolean
+  ,atacseq_sn     boolean
+  ,atacseq_sc     boolean
+  ,codex          boolean
+  ,lipidomics     boolean
+  ,metabolomics   boolean
+  ,proteomics     boolean
+  ,rnaseq_bulk    boolean
+  ,rnaseq_sn      boolean
+  ,rnaseq_sc      boolean
+  ,isolation_dna  boolean
+  ,isolation_rna  boolean
+  ,isolation_protein boolean
+  ,single_gland_atac_wgs boolean
+  ,wes            boolean
+  ,wgs            boolean
+  ,wg_bisulfite   boolean)
 ;

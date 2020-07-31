@@ -53,7 +53,24 @@ insert into core.sample
   ,dysplasia_cat
   ,dysplasia_pct
   ,notes
-  ,vap_names)
+  ,vap_names
+  ,atacseq_bulk
+  ,atacseq_sn
+  ,atacseq_sc
+  ,codex
+  ,lipidomics
+  ,metabolomics
+  ,proteomics
+  ,rnaseq_bulk
+  ,rnaseq_sn
+  ,rnaseq_sc
+  ,isolation_dna
+  ,isolation_rna
+  ,isolation_protein
+  ,single_gland_atac_wgs
+  ,wes
+  ,wgs
+  ,wg_bisulfite)
 select
 	 subject.subject_pk
 	,st.sample_name
@@ -85,6 +102,24 @@ select
 	 end as dysplasia_percentage
     ,st.notes
     ,st.vap_names
+    --boolean-valued columns for whether an assay was performed
+    ,(case when nullif(st.bulk_atac,'')             is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.sn_atac_seq,'')           is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.sc_atac_seq,'')           is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.he_codex,'')              is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.lipidomics,'')            is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.metabolomics,'')          is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.proteomics,'')            is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.rna_seq,'')               is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.sn_rna_seq,'')            is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.sc_rna_seq,'')            is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.dna_isolation,'')         is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.rna_isolation,'')         is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.protein_isolation,'')     is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.single_gland_atac_wgs,'') is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.dna_wgs,'')               is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.dna_wes,'')               is not null then 1 else 0 end)::bool
+    ,(case when nullif(st.wg_bisulfite,'')          is not null then 1 else 0 end)::bool
 from staging.sample_tracker st
 join core.subject on subject.subject_bk = st.patient
 left join staging.sample_coordinates coords on coords.sample_name = st.sample_name

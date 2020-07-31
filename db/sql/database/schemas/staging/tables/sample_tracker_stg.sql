@@ -37,8 +37,9 @@ create table staging.sample_tracker_stg
   ,notes                  varchar(250)
   ,vap_names              varchar(100)
   ,batch_3_he_initial_set varchar(100)
-  ,batch_3_assay          varchar(100)
   ,all_assays             varchar(100)
+  ,batch_3_assay          varchar(100)
   ,single_nuclei          varchar(100)
+  ,notes_addl             varchar(250)
 )
 ;

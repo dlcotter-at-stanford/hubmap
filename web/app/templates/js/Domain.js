@@ -45,14 +45,22 @@
             samples: [
               {% for sample in tables["clinical"]["data"] %}
                 { id          : "{{ sample.sample_bk }}",
-                  length     : {{ sample.size_length }},
-                  width      : {{ sample.size_width }},
-                  depth      : {{ sample.size_depth }},
-                  x          : {{ sample.x_coord }},
-                  y          : {{ sample.y_coord }},
-                  tissue_type: "{{ sample.stage.lower() if sample.stage else 'none' }}",
-                  phenotype  : "{{ sample.phenotype.lower() if sample.phenotype else 'none' }}",
-                  location   : "{{ sample.organ_piece.lower() if sample.organ_piece else 'none' }}" },
+                  length      : {{ sample.size_length }},
+                  width       : {{ sample.size_width }},
+                  depth       : {{ sample.size_depth }},
+                  x           : {{ sample.x_coord }},
+                  y           : {{ sample.y_coord }},
+                  tissue_type : "{{ sample.stage.lower() if sample.stage else 'none' }}",
+                  phenotype   : "{{ sample.phenotype.lower() if sample.phenotype else 'none' }}",
+                  location    : "{{ sample.organ_piece.lower() if sample.organ_piece else 'none' }}",
+                  atacseq_bulk: {{ "true" if sample.bulk_atac else "false" }},
+                  atacseq_sn  : {{ "true" if sample.sn_atac_seq else "false" }},
+                  lipidomics  : {{ "true" if sample.lipidomics else "false" }},
+                  metabolomics: {{ "true" if sample.metabolomics else "false" }},
+                  proteomics  : {{ "true" if sample.proteomics else "false" }},
+                  rnaseq_bulk : {{ "true" if sample.rna_seq else "false" }},
+                  rnaseq_sn   : {{ "true" if sample.sn_rna_seq else "false" }},
+                  wgs         : {{ "true" if sample.dna_wes else "false" }} },
               {% endfor %}
             ]
           {% endif %}

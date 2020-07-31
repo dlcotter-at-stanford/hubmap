@@ -42,11 +42,27 @@ var APP = (function (_public) {
         function (sample) {
           var checked = { };
           var checkbox_ids = 
-            [ "tissue_type_normal", "tissue_type_polyp", "tissue_type_adca",
-              "size_small", "size_medium", "size_large",
-              "phenotype_sessile", "phenotype_stalk",
-              "location_ascending", "location_transverse", "location_descending", "location_rectum"
-            ];
+            [ "tissue_type_normal"
+             ,"tissue_type_polyp"
+             ,"tissue_type_adca"
+             ,"size_small"
+             ,"size_medium"
+             ,"size_large"
+             ,"phenotype_sessile"
+             ,"phenotype_stalk"
+             ,"location_ascending"
+             ,"location_transverse"
+             ,"location_descending"
+             ,"location_rectum"
+             ,"assay_atacseq_bulk"
+             ,"assay_atacseq_sn"
+             ,"assay_lipidomics"
+             ,"assay_metabolomics"
+             ,"assay_proteomics"
+             ,"assay_rnaseq_bulk"
+             ,"assay_rnaseq_sn"
+             ,"assay_wgs"
+             ,"assay_any" ];
           checkbox_ids.forEach( function(checkbox_id) {
             checked[checkbox_id] = document.getElementById(checkbox_id).checked;
           });
@@ -82,7 +98,27 @@ var APP = (function (_public) {
                ||
               (sample.location === "descending" && checked["location_descending"])
                ||
-              (sample.location === "rectum"     && checked["location_rectum"]) );
+              (sample.location === "rectum"     && checked["location_rectum"]) )
+            &&
+            // assays
+          ( (sample.atacseq_bulk && checked["assay_atacseq_bulk"])
+               ||
+            (sample.atacseq_sn   && checked["assay_atacseq_sn"  ])
+               ||
+            (sample.lipidomics   && checked["assay_lipidomics"  ])
+               ||
+            (sample.metabolomics && checked["assay_metabolomics"])
+               ||
+            (sample.proteomics   && checked["assay_proteomics"  ])
+               ||
+            (sample.rnaseq_bulk  && checked["assay_rnaseq_bulk" ])
+               ||
+            (sample.rnaseq_sn    && checked["assay_rnaseq_sn"   ])
+               ||
+            (sample.wgs          && checked["assay_wgs"         ])
+               ||
+            (checked["assay_any"         ])
+               );
         }
       );
     },

@@ -87,7 +87,7 @@ footer {
   position: relative;
   top: 20px;
   left: 20px;
-  width: 1510px;
+  width: 4000px;
   min-height: 2000px; /* set to this high number to avoid the table extending beyond its background */
 }
 
