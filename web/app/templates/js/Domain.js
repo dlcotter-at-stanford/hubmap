@@ -45,9 +45,9 @@
             samples: [
               {% for sample in tables["clinical"]["data"] %}
                 { id          : "{{ sample.sample_bk }}",
-                  length      : {{ sample.size_length }},
-                  width       : {{ sample.size_width }},
-                  depth       : {{ sample.size_depth }},
+                  length      : {{ sample.size_length if sample.size_length else "undefined" }},
+                  width       : {{ sample.size_width  if sample.size_width  else "undefined" }},
+                  depth       : {{ sample.size_depth  if sample.size_depth  else "undefined" }},
                   x           : {{ sample.x_coord }},
                   y           : {{ sample.y_coord }},
                   tissue_type : "{{ sample.stage.lower() if sample.stage else 'none' }}",
@@ -80,7 +80,7 @@
   // Public variables
   // Enrich raw sample data with some calculated fields
   domain.samples.forEach(function (s) {
-    s.size = s.length * s.width * s.depth;
+    s.size = (s.length || 1) * (s.width || 1) * (s.depth || 1);
     s.size_cat = s.size < 50 ? "small" : s.size < 100 ? "medium" : "large";
     s.distances = [ ];
     domain.samples.forEach(function (t, i) {

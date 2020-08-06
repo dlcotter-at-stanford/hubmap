@@ -159,9 +159,11 @@ var APP = (function (_public) {
       pin.id = sample.id;
       pin.cx = viz.horizontal_offset + (subject.colon_length - sample.x) * viz.conversion_factor;
       pin.cy = viz.vertical_offset + sample.y * viz.conversion_factor;
-      pin.r = Math.log( sample.length * sample.width  * sample.depth );
+      // length/width/depth all default to 1 if undefined
+      // log defaults to 1 if zero (since log(1*1*1) = 0)
+      pin.r = Math.log( sample.length || 1 * sample.width || 1 * sample.depth || 1 ) || 1;
       pin.fill = 'gray';
-      pin.title = `${ sample.id } \n(${ sample.x }, ${ sample.y }) \n${ sample.length } x ${ sample.width } x ${ sample.depth } (${ (sample.length * sample.width * sample.depth) } mm³) \n${ sample.tissue_type }, ${ sample.phenotype }, ${ sample.location }`;
+      pin.title = `${ sample.id } \n(${ sample.x }, ${ sample.y }) \n${ sample.length || '--' } x ${ sample.width || '--' } x ${ sample.depth || '--' } (${ ((sample.length || 1) * (sample.width || 1) * (sample.depth || 1)) } mm³) \n${ sample.tissue_type }, ${ sample.phenotype }, ${ sample.location }`;
       pin.distances = [ ];
       sample['distances'].forEach(function (d, i) {
         pin.distances[i] = d * viz.conversion_factor;

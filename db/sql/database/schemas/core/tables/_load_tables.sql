@@ -90,9 +90,9 @@ select
      end as organ_piece
     ,lower(st.stage) as stage
     ,lower(st.phenotype) as phenotype
-    ,coalesce(nullif(split_part(st.size_mm, 'x', 1), ''), '1')::numeric(4,1) as size_length
-    ,coalesce(nullif(split_part(st.size_mm, 'x', 2), ''), '1')::numeric(4,1) as size_width
-    ,coalesce(nullif(split_part(st.size_mm, 'x', 3), ''), '1')::numeric(4,1) as size_depth
+    ,nullif(split_part(st.size_mm, 'x', 1), '')::numeric(4,1) as size_length
+    ,nullif(split_part(st.size_mm, 'x', 2), '')::numeric(4,1) as size_width
+    ,nullif(split_part(st.size_mm, 'x', 3), '')::numeric(4,1) as size_depth
     ,coords.x::numeric(5,1)
     ,coords.y::numeric(5,1)
     ,lower(st.dysplasia_category) as dysplasia_category

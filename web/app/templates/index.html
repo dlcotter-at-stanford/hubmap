@@ -163,7 +163,6 @@
           pin.element = document.getElementById(pin.id);
           pin.element.addEventListener("mouseover",
             function (e) {
-              console.log(pin.id);
               pin.drawDistanceLines();
               UI.tables.forEach(
                 table => table.highlightRows(pin.id)
