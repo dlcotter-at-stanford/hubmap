@@ -23,7 +23,7 @@ if [ "$FLASK_ENV" = "prd" ]; then
   export FLASK_CONFIG=../prd.cfg
   export FLASK_DEBUG=False
   # kill the existing process if the app is already running (suppress help message if not)
-  ps aux | grep -E "python app\.py$" | tr -s ' ' | cut -d' ' -f2 | xargs kill 2>/dev/null
+  ps aux | grep -E "python web\/app\.py$" | tr -s ' ' | cut -d' ' -f2 | xargs kill 2>/dev/null
   # run the app in the background
   python web/app.py &
 fi
