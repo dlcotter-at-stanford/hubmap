@@ -16,8 +16,6 @@ set XTRACE
 if [ "$FLASK_ENV" = "dev" ]; then
   export FLASK_CONFIG=../dev.cfg
   export FLASK_DEBUG=True
-  echo $(pwd)
-  ls web/app.py
   python web/app.py
 fi
 
