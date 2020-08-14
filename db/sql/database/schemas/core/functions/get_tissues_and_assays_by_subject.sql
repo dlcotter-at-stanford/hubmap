@@ -1,7 +1,7 @@
 create or replace
 function core.get_tissues_and_assays_by_subject
 	(p_subject_bk varchar(100)
-	,has_coordinates boolean default false)
+	,has_coordinates boolean default null)
 returns table
 	(tissue_bk      varchar(100)
 	,init_pres_mthd varchar(100)
@@ -20,20 +20,7 @@ join core.sample on subject.subject_pk = sample.subject_pk
 join core.tissue on sample.sample_pk = tissue.sample_pk
 left join core.assay on tissue.tissue_pk = assay.tissue_pk
 where subject.subject_bk = p_subject_bk
-and
-	 --get all records without regard to presence of coordinates
-	(has_coordinates is null
-
-	 --only get records with coordinates
-	 or (has_coordinates is true
-		 and sample.x_coord is not null
-		 and sample.y_coord is not null)
-
-	 --only get records without coordinates
-	 or (has_coordinates is false
-		 and sample.x_coord is null
-		 and sample.y_coord is null))
-
-order by sample.sample_bk, tissue.tissue_bk
+and has_coordinates is null or has_coordinates = (sample.x_coord is not null and sample.y_coord is not null)
+order by sample.sample_bk
 $$
 ;
