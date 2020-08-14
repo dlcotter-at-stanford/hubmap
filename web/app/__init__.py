@@ -5,6 +5,7 @@ import flask
 app = flask.Flask(__name__)
 
 from app import routes
+from app import rest
 
 if 'FLASK_CONFIG' in os.environ:
   app.config.from_envvar('FLASK_CONFIG')
