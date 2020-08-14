@@ -64,8 +64,9 @@ psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/tab
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/tables/assay.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/tables/storage.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/tables/_load_tables.sql -v data_dir="$DATA_DIR"
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_samples.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_studies.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_subjects.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_samples.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_pathology.sql
 
 # Metadata tables
