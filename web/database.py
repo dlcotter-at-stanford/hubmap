@@ -1,7 +1,9 @@
-import functools
 from loguru import logger
-import psycopg2
 from psycopg2.extras import DictCursor
+import decimal
+import functools
+import pdb
+import psycopg2
 import sys
 import traceback
 
@@ -26,7 +28,7 @@ class Database:
     self.conn     = None
 
   def connect(self):
-    """Connect to a Postgres database."""
+    """ Connect to a Postgres database """
     if self.conn is None or self.conn.status != 1:
       try:
         self.conn = psycopg2.connect(host=self.host, user=self.username, password=self.password, port=self.port, dbname=self.dbname)
@@ -35,7 +37,7 @@ class Database:
         sys.exit()
 
   def call_proc(self, proc, args):
-    """Run a SQL query to select rows from table and return dictionaries."""
+    """ Run a stored procedure """
     self.connect()
     with self.conn.cursor(cursor_factory=DictCursor) as cursor:
       try:
@@ -46,35 +48,31 @@ class Database:
           self.conn.close()
         return
 
-      # Return results of stored procedure as two lists: one of column names
-      # and another of data values. This change came about as a response to a
-      # need to order the columns in the presentation layer. Initially the
-      # results were being returned as a dictionary with column names as keys,
-      # but dictionaries don't preserve order. I looked into using ordered
-      # dictionaries, but in the end this seemed simpler.
       header = [ desc[0] for desc in cursor.description ]
       data = [ row for row in cursor.fetchall() ]
+      return header, data
 
-      # Translate internal database column names into more user-friendly
-      # equivalents. For those whose database column names are the same as
-      # their user friendly names but for an underscore, which is many, the
-      # substitution is done in the else clause of the list comprehension.
-      # For all others, the translation table provides the user-friendly name
-      # The wrapped function will return a data set with a field 'header'.
-      translation_table = { 'subject_bk' : 'subject'
-                           ,'sample_bk'  : 'sample name'
-                           ,'size_length': 'length'
-                           ,'size_width' : 'width'
-                           ,'size_depth' : 'depth'
-                           ,'x_coord'    : 'x'
-                           ,'y_coord'    : 'y'
-                           ,'organ_piece': 'location'
-                           ,'attr'       : 'attribute'}
-      
-      header = [ translation_table[col] if col in translation_table else col.replace('_',' ') for col in header ]
+  ### Wrappers ###
+  def get_data(self, proc, args, result_prefs):
+    """ Wraps call_proc() and does some post-processing """
+    header, data = self.call_proc(proc, args)
 
+    if result_prefs['stringify']:
+      data = [ [ str(cell) if type(cell) in [ decimal.Decimal ] else cell for cell in row ] for row in data ]
+
+    if result_prefs['friendly_names']:
+      header = [ self.friendly_names[col] if col in self.friendly_names else col.replace('_',' ') for col in header ]
+
+    if result_prefs['to_dataset']:
+      # Return results of stored procedure as two lists: one of column names
+      # and another of data values. This change came about as a response to a
+      # need to order the columns in the presentation layer.
       return { 'header': header, 'data': data }
+    else:  
+      # Return results as list of key-value maps (suitable for JSON rendering)
+      return [ { key: value for key, value in zip(header, row) } for row in data ]
 
+  ### Helper methods ###
   def get_results_by_column_name(self, dataset, column_name):
     # Find the ordinal position of the requested column
     column_num = next(index for index, item in enumerate(dataset['header']) if item.lower() == column_name)
@@ -82,23 +80,120 @@ class Database:
     # Return just the results from that column
     return [ row[column_num] for row in dataset['data'] ]
 
-  ### Stored procedure wrappers
-  def get_subjects_with_mapped_samples(self):
-    return self.call_proc('core.get_subjects', { 'has_phi': False, 'has_coordinates': True })
+  ### Stored procedure wrappers - all return options available
+  """ Prototype of basic get_XXX method
+      def get_XXX(self,
 
-  def get_samples_with_coordinates(self, subject):
-    return self.call_proc('core.get_samples', { 'p_subject_bk': subject, 'has_coordinates': True })
+                 # query arguments, e.g. criteria for SQL query
+                 args = { },
 
-  def get_pathology_by_subject(self, subject):
-    return self.call_proc('core.get_pathology', { 'p_subject_bk': subject })
-    
-  def get_metadata(self, metadata_type, subject, sample=None):
-    # Not sure this is the right way to raise this error, but at least
-    # something will happen if the metadata type isn't supported.
-    if metadata_type not in ['atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics', 'metabolomics', 'proteomics', 'rnaseq_bulk', 'rnaseq_single_nucleus', 'whole_genome_seq' ]:
-      raise
-    else:
-      return self.call_proc('metadata.get_' + metadata_type + '_metadata', { 'p_subject_bk': subject, 'p_sample_bk': sample })
+                 # shape and format of returned results
+                 result_prefs = { }):
 
-  def get_all_metadata(self, subject, sample=None):
-    return { assay: self.get_metadata(assay, subject, sample) for assay in [ 'atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics', 'metabolomics', 'proteomics', 'rnaseq_bulk', 'rnaseq_single_nucleus', 'whole_genome_seq' ] }
+        # translate from user-friendly names to those used by the stored proc
+        query_args = args
+
+        # merge passed-in result preferences with defaults
+        result_prefs = {**self.result_prefs, **result_prefs}
+
+        return self.get_data('core.get_XXX', query_args, result_prefs)
+  """
+
+  def get_studies(self, query_args = { }, result_prefs = { }):
+    if type(query_args) is not dict:
+      raise ValueError("Named argument 'query_args' must be dictionary. Expecting dictionary with query arguments, e.g. { 'subject': 'A001' }.")
+
+    return self.get_data('core.get_studies', query_args, {**self.result_prefs, **result_prefs})
+
+  def get_subjects(self, query_args = { }, result_prefs = { }):
+    if type(query_args) is not dict:
+      raise ValueError("Named argument 'query_args' must be dictionary. Expecting dictionary with query arguments, e.g. { 'subject': 'A001' }.")
+
+    if 'study' not in query_args:
+      raise ValueError("Missing required parameter 'study' from 'query_args' dictionary")
+
+    # copy the passed-in dict so the original doesn't get modified when we
+    # translate user-friendly names to database parameter names (messes up
+    # loops like the one in get_all_metadata() )
+    _args = query_args.copy()
+    _args['p_study_bk'] = _args.pop('study')
+
+    return self.get_data('core.get_subjects', _args, {**self.result_prefs, **result_prefs})
+
+  def get_samples(self, query_args = { }, result_prefs = { }):
+    if type(query_args) is not dict:
+      raise ValueError("Named argument 'query_args' must be dictionary. Expecting dictionary with query arguments, e.g. { 'subject': 'A001' }.")
+
+    if 'subject' not in query_args:
+      raise ValueError("Missing required parameter 'subject' from 'query_args' dictionary")
+
+    # copy the passed-in dict so the original doesn't get modified when we
+    # translate user-friendly names to database parameter names (messes up
+    # loops like the one in get_all_metadata() )
+    _args = query_args.copy()
+    _args['p_subject_bk'] = _args.pop('subject')
+
+    return self.get_data('core.get_samples', _args, {**self.result_prefs, **result_prefs})
+
+  def get_pathology_reports(self, query_args = { }, result_prefs = { }):
+    if type(query_args) is not dict:
+      raise ValueError("Named argument 'query_args' must be dictionary. Expecting dictionary with query arguments, e.g. { 'subject': 'A001', 'sample': 'A001-C-001' }.")
+
+    if 'subject' not in query_args:
+      raise ValueError("Missing required parameter 'subject' from 'query_args' dictionary")
+      
+    # copy the passed-in dict so the original doesn't get modified when we
+    # translate user-friendly names to database parameter names (messes up
+    # loops like the one in get_all_metadata() )
+    _args = query_args.copy()
+    _args['p_subject_bk'] = _args.pop('subject')
+
+    return self.get_data('core.get_pathology', _args, {**self.result_prefs, **result_prefs})
+
+  def get_metadata(self, assay, query_args = { }, result_prefs = { }):
+    if type(assay) is not str or assay not in self.assays:
+      raise ValueError("The first argument must be one of the following assays: " + str(self.assays))
+
+    if type(query_args) is not dict:
+      raise ValueError("Named argument 'query_args' must be dictionary. Expecting dictionary with query arguments, e.g. { 'subject': 'A001', 'sample': 'A001-C-001' }.")
+
+    # copy the passed-in dict so the original doesn't get modified when we
+    # translate user-friendly names to database parameter names (messes up
+    # loops like the one in get_all_metadata() )
+    _args = query_args.copy()
+    if 'subject' in _args:
+      _args['p_subject_bk'] = _args.pop('subject')
+    if 'sample' in _args:
+      _args['p_sample_bk'] = _args.pop('sample')
+
+    return self.get_data('metadata.get_' + assay + '_metadata', _args, {**self.result_prefs, **result_prefs})
+
+  def get_all_metadata(self, query_args = { }, result_prefs = { }):
+    return { assay: self.get_metadata( assay, query_args, {**self.result_prefs, **result_prefs} ) for assay in self.assays }
+
+  ### Hardcoded bits ###
+  assays = \
+    [ 'atacseq_bulk_hiseq'
+    , 'atacseq_single_nucleus'
+    , 'lipidomics'
+    , 'metabolomics'
+    , 'proteomics'
+    , 'rnaseq_bulk'
+    , 'rnaseq_single_nucleus'
+    , 'whole_genome_seq' ]
+
+  friendly_names = \
+    { 'subject_bk' : 'subject'
+    , 'sample_bk'  : 'sample name'
+    , 'size_length': 'length'
+    , 'size_width' : 'width'
+    , 'size_depth' : 'depth'
+    , 'x_coord'    : 'x'
+    , 'y_coord'    : 'y'
+    , 'organ_piece': 'location'
+    , 'attr'       : 'attribute' }
+
+  result_prefs = \
+    { 'stringify'     : False
+		 ,'friendly_names': False
+		 ,'to_dataset'    : False }

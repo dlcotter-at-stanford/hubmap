@@ -27,12 +27,12 @@
     var APP = (function (_public) {
       return {
         Domain: {
-        {% for subject in subjects["data"] %}
+        {% for subject in subjects %}
           {% if subject.subject_bk == subject_id %}
             subject: {
               id            : "{{ subject.subject_bk }}",
               disease_status: "{{ subject.disease_status }}",
-              colon_length  : {{ subject.colon_length        if subject.colon_length        else "undefined" }},
+              colon_length  : {{ subject.colon_length if subject.colon_length else "undefined" }},
               sections      : [ { name: "rectum"    , position: {{ subject.rectum_position     if subject.rectum_position     else "undefined" }} },
                                 { name: "descending", position: {{ subject.descending_position if subject.descending_position else "undefined" }} },
                                 { name: "transverse", position: {{ subject.transverse_position if subject.transverse_position else "undefined" }} },
@@ -48,19 +48,19 @@
                   length      : {{ sample.size_length if sample.size_length else "undefined" }},
                   width       : {{ sample.size_width  if sample.size_width  else "undefined" }},
                   depth       : {{ sample.size_depth  if sample.size_depth  else "undefined" }},
-                  x           : {{ sample.x_coord }},
-                  y           : {{ sample.y_coord }},
+                  x           : {{ sample.x_coord if sample.x_coord else "undefined" }},
+                  y           : {{ sample.y_coord if sample.y_coord else "undefined" }},
                   tissue_type : "{{ sample.stage.lower() if sample.stage else 'none' }}",
                   phenotype   : "{{ sample.phenotype.lower() if sample.phenotype else 'none' }}",
                   location    : "{{ sample.organ_piece.lower() if sample.organ_piece else 'none' }}",
-                  atacseq_bulk: {{ "true" if sample.bulk_atac else "false" }},
-                  atacseq_sn  : {{ "true" if sample.sn_atac_seq else "false" }},
-                  lipidomics  : {{ "true" if sample.lipidomics else "false" }},
+                  atacseq_bulk: {{ "true" if sample.atacseq_bulk else "false" }},
+                  atacseq_sn  : {{ "true" if sample.atacseq_sn   else "false" }},
+                  lipidomics  : {{ "true" if sample.lipidomics   else "false" }},
                   metabolomics: {{ "true" if sample.metabolomics else "false" }},
-                  proteomics  : {{ "true" if sample.proteomics else "false" }},
-                  rnaseq_bulk : {{ "true" if sample.rna_seq else "false" }},
-                  rnaseq_sn   : {{ "true" if sample.sn_rna_seq else "false" }},
-                  wgs         : {{ "true" if sample.dna_wes else "false" }} },
+                  proteomics  : {{ "true" if sample.proteomics   else "false" }},
+                  rnaseq_bulk : {{ "true" if sample.rnaseq_bulk  else "false" }},
+                  rnaseq_sn   : {{ "true" if sample.rnaseq_sn    else "false" }},
+                  wgs         : {{ "true" if sample.wgs          else "false" }} },
               {% endfor %}
             ]
           {% endif %}

@@ -19,7 +19,7 @@
         <fieldset id="colon_select_fieldset">
           <legend id="colon_select_legend">Colon</legend>
             {# display links to other colons #}
-            {% for subject in subjects["data"] %}
+            {% for subject in subjects %}
               <label><a href="{{ url_for("map", subject_id=subject.subject_bk) }}">{{ subject.subject_bk }}</a></label>
             {% endfor %}
           </select>
@@ -90,7 +90,7 @@
               <thead>
                 <tr>
                   {% for column in tables[table]["header"] %}
-                    {# looking for specific columns to sort as numbers will work for now but soon you"ll need to pass the data type from the database as well #}
+                    {# looking for specific columns to sort as numbers will work for now but soon you'll need to pass the data type from the database as well #}
                     {% if column.lower() in ["length", "width", "depth", "x", "y" ] %}
                       <th class="js-sort-number">{{ column }}</th>
                     {% else %}
