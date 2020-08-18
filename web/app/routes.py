@@ -3,8 +3,12 @@ import database
 import flask
 import pdb
 
-@app.route('/')  # eventually we'll want a real landing page
-@app.route('/<subject_id>')
+@app.route('/')
+def landing():
+  flask.redirect('/map')
+  # eventually we'll want a real landing page
+
+@app.route('/map/<subject_id>')
 def map(subject_id=None):
   # Initialize database context and get list of subjects with mapped samples
   db = database.Database(app.config) 
@@ -19,7 +23,7 @@ def map(subject_id=None):
   # Redirect if no matching subjects found:
   subject_ids = [ subject['subject_bk'] for subject in subjects ]
   if subject_id not in subject_ids:
-    return flask.redirect('/')
+    return flask.redirect('/map')
 
   # Get the data sets to be displayed as tables under the visualization.
   # To add new data set, just add the name and database call here and add the

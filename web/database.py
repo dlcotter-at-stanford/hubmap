@@ -124,6 +124,9 @@ class Database:
     if type(query_args) is not dict:
       raise ValueError("Named argument 'query_args' must be dictionary. Expecting dictionary with query arguments, e.g. { 'subject': 'A001' }.")
 
+    if 'study' not in query_args:
+      raise ValueError("Missing required parameter 'study' from 'query_args' dictionary")
+
     if 'subject' not in query_args:
       raise ValueError("Missing required parameter 'subject' from 'query_args' dictionary")
 
@@ -131,6 +134,7 @@ class Database:
     # translate user-friendly names to database parameter names (messes up
     # loops like the one in get_all_metadata() )
     _args = query_args.copy()
+    _args['p_study_bk'] = _args.pop('study')
     _args['p_subject_bk'] = _args.pop('subject')
 
     return self.get_data('core.get_samples', _args, {**self.result_prefs, **result_prefs})

@@ -4,25 +4,34 @@ import flask
 import pdb
 
 ### REST API ###
-@app.route('/studies')
+@app.route("/api/")
+@app.route("/api/studies")
 def studies():
   db = database.Database(app.config) 
-  studies = db.get_studies(result_prefs = { 'stringify': True })
+  studies = db.get_studies(result_prefs = { "stringify": True })
  
   return flask.jsonify(studies)
 
-@app.route('/subjects/<study>')
+# maybe there should be a route like <study>/<subject>/<sample> for convenience
+
+@app.route("/api/<study>/")
+@app.route("/api/studies/<study>/")
+@app.route("/api/studies/<study>/subjects")
 def subjects(study):
   db = database.Database(app.config) 
-  subjects = db.get_subjects(query_args = { 'study': study }
-                            ,result_prefs = { 'stringify': True })
+  subjects = db.get_subjects(query_args   = { "study": study.lower() }
+                            ,result_prefs = { "stringify": True })
  
   return flask.jsonify(subjects)
 
-@app.route('/samples')
-def samples():
+@app.route("/api/<study>/<subject>/", methods = ["GET", "POST"])
+@app.route("/api/<study>/subjects/<subject>/", methods = ["GET", "POST"])
+@app.route("/api/studies/<study>/subjects/<subject>", methods = ["GET", "POST"])
+def samples(study, subject):
   db = database.Database(app.config) 
-  samples = db.get_samples(result_prefs = { 'stringify': True })
+  samples = db.get_samples(query_args   = { "study"    : study.lower()
+                                          , "subject"  : subject.lower() }
+                          ,result_prefs = { "stringify": True })
  
   return flask.jsonify(samples)
 

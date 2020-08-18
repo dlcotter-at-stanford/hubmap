@@ -1,6 +1,7 @@
 create or replace
 function core.get_samples
-  (p_subject_bk varchar(100)
+  (p_study_bk   varchar(100)
+  ,p_subject_bk varchar(100)
   ,has_coordinates boolean default null)
 returns table
   (sample_bk    varchar(100)
@@ -42,7 +43,9 @@ select sample_bk
   ,wgs
 from core.sample
 join core.subject on subject.subject_pk = sample.subject_pk
-where subject.subject_bk = p_subject_bk
+join core.study on study.study_pk = subject.study_pk
+where lower(study.study_bk) = p_study_bk
+and lower(subject.subject_bk) = p_subject_bk
 and (has_coordinates is null or has_coordinates = (sample.x_coord is not null and sample.y_coord is not null))
 order by sample.sample_bk
 $$
