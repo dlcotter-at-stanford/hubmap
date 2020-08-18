@@ -13,7 +13,7 @@ class Database:
   def __init__(self, config = None):
     # This code provides some local, not-very-secure database defaults for testing.
     # Obviously, do not use these user IDs & passwords for production databases.
-    if config is None:
+    if config is None or ('TESTING' in config and config['TESTING']):
       self.host     = 'localhost'
       self.port     =  5432
       self.dbname   = 'biolab'

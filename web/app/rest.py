@@ -11,10 +11,11 @@ def studies():
  
   return flask.jsonify(studies)
 
-@app.route('/subjects')
-def subjects():
+@app.route('/subjects/<study>')
+def subjects(study):
   db = database.Database(app.config) 
-  subjects = db.get_subjects(result_prefs = { 'stringify': True })
+  subjects = db.get_subjects(query_args = { 'study': study }
+                            ,result_prefs = { 'stringify': True })
  
   return flask.jsonify(subjects)
 
