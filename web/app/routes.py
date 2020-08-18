@@ -4,7 +4,7 @@ import flask
 import pdb
 
 @app.route('/')  # eventually we'll want a real landing page
-@app.route('/<subject_id>')  # eventually this should be '/map/<subject_id>'
+@app.route('/<subject_id>')
 def map(subject_id=None):
   # Initialize database context and get list of subjects with mapped samples
   db = database.Database(app.config) 

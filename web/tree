@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+tree -I "venv|__pycache__"
