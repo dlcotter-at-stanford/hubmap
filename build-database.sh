@@ -68,6 +68,10 @@ psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/fun
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_subjects.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_samples.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_pathology.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_study.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_subject.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_sample.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_tissue.sql
 
 # Metadata tables
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/schema.sql

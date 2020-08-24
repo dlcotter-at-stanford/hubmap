@@ -1,7 +1,7 @@
 create table core.sample
   (sample_pk      serial primary key
-  ,subject_pk     integer references core.subject(subject_pk)
-  ,sample_bk      varchar(100)
+  ,subject_pk     integer not null references core.subject(subject_pk)
+  ,sample_bk      varchar(100) unique
   ,amount         decimal(10,2)
   ,unit           varchar(100)
   ,collection     varchar(100)

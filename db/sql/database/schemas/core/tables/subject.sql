@@ -4,8 +4,8 @@
 -- alphanumeric naming convention of study).
 create table core.subject
   (subject_pk          serial primary key
-  ,study_pk            integer references core.study(study_pk)
-  ,subject_bk          varchar(100)
+  ,study_pk            integer not null references core.study(study_pk)
+  ,subject_bk          varchar(100) unique
   ,disease_status      varchar(100)
   ,rectum_position     decimal(5,2)
   ,descending_position decimal(5,2)
