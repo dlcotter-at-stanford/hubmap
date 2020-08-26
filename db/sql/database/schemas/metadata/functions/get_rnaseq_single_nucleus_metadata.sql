@@ -1,4 +1,4 @@
-create or replace function metadata.get_rnaseq_single_nucleus_metadata(p_subject_bk varchar(100) default null, p_sample_bk varchar(100) default null)
+create or replace function metadata.get_rnaseq_single_nucleus(p_subject_bk varchar(100) default null, p_sample_bk varchar(100) default null)
 returns table
 	(sample_bk varchar(100)
 	,study_donor_id varchar(100)
