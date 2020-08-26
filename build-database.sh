@@ -68,10 +68,10 @@ psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/fun
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_subjects.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_samples.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/get_pathology.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_study.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_subject.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_sample.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/insert_tissue.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/put_study.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/put_subject.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/put_sample.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/functions/put_tissue.sql
 
 # Metadata tables
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/schema.sql
@@ -86,14 +86,14 @@ psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/tables/_load_tables.sql -v data_dir="$DATA_DIR"
 
 # Metadata functions
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_rnaseq_bulk_metadata.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_whole_genome_seq_metadata.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_proteomics_metadata.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_lipidomics_metadata.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_atacseq_bulk_hiseq_metadata.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_metabolomics_metadata.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_rnaseq_single_nucleus_metadata.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_atacseq_single_nucleus_metadata.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_rnaseq_bulk.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_whole_genome_seq.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_proteomics.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_lipidomics.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_atacseq_bulk_hiseq.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_metabolomics.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_rnaseq_single_nucleus.sql
+psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_atacseq_single_nucleus.sql
 
 # Security settings
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/roles/role.sql
