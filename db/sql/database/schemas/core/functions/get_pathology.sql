@@ -93,7 +93,7 @@ select
 from core.subject
 join core.sample on sample.subject_pk = subject.subject_pk
 join core.pathology on pathology.sample_pk = sample.sample_pk
-where subject.subject_bk = p_subject_bk
+where lower(subject.subject_bk) = lower(p_subject_bk)
 order by sample.sample_bk
 $function$
 ;

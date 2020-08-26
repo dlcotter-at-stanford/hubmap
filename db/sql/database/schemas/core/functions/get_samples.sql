@@ -44,8 +44,8 @@ select sample_bk
 from core.sample
 join core.subject on subject.subject_pk = sample.subject_pk
 join core.study on study.study_pk = subject.study_pk
-where lower(study.study_bk) = p_study_bk
-and lower(subject.subject_bk) = p_subject_bk
+where lower(study.study_bk) = lower(p_study_bk)
+and lower(subject.subject_bk) = lower(p_subject_bk)
 and (has_coordinates is null or has_coordinates = (sample.x_coord is not null and sample.y_coord is not null))
 order by sample.sample_bk
 $$

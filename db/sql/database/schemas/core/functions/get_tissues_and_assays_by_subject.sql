@@ -19,7 +19,7 @@ from core.subject
 join core.sample on subject.subject_pk = sample.subject_pk
 join core.tissue on sample.sample_pk = tissue.sample_pk
 left join core.assay on tissue.tissue_pk = assay.tissue_pk
-where subject.subject_bk = p_subject_bk
+where lower(subject.subject_bk) = lower(p_subject_bk)
 and has_coordinates is null or has_coordinates = (sample.x_coord is not null and sample.y_coord is not null)
 order by sample.sample_bk
 $$
