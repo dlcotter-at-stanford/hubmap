@@ -1,5 +1,5 @@
 create or replace
-function core.insert_study
+function core.put_study
          (p_study_bk varchar(100))
 returns table 
          (study_pk integer       --used to demonstrated idempotence in REST API

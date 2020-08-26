@@ -1,5 +1,5 @@
 create or replace
-function core.insert_subject
+function core.put_subject
          (p_study_bk            varchar(100)
          ,p_subject_bk          varchar(100)
          ,p_disease_status      varchar(100)

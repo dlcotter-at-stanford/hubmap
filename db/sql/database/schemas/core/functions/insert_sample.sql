@@ -1,5 +1,5 @@
 create or replace
-function core.insert_sample
+function core.put_sample
          (p_study_bk              varchar(100)
          ,p_subject_bk            varchar(100)
          ,p_sample_bk             varchar(100)

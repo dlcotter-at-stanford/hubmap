@@ -1,5 +1,5 @@
 create or replace
-function core.insert_tissue
+function core.put_tissue
         (p_study_bk       varchar(100)
         ,p_subject_bk     varchar(100)
         ,p_sample_bk      varchar(100)
