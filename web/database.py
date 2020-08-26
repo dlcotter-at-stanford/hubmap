@@ -74,7 +74,11 @@ class Database:
       # return results as list of key-value maps (suitable for JSON rendering)
       return [ { key: value for key, value in zip(header, row) } for row in data ]
 
-  def get(self, entity, query_args:Optional[Dict]={ }, result_prefs:Optional[Dict]={ }):
+  def do(self, operation, entity, query_args:Optional[Dict]={ }, result_prefs:Optional[Dict]={ }):
+    # check that operation is one of 'get', 'put', or 'del'
+    if operation not in ['get', 'put', 'del']:
+      raise ValueError("Operation must be one of 'get', 'put', or 'del'")
+
     # check that entity is one of the ones in the database
     core = [ 'studies', 'subjects', 'samples', 'pathology' ]
     metadata = [ 'atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics',
@@ -89,22 +93,4 @@ class Database:
       raise ValueError("Parameter 'entity' must be one of these values: " + str(core + metadata))
     
     # call the internal call_proc method to handle the database interaction
-    return self.call_proc(schema + '.get_' + entity, query_args, result_prefs)
-
-  # Destructive methods (create, update, delete)
-  def put(self, entity, query_args:Optional[Dict]={ }, result_prefs:Optional[Dict]={ }):
-    # check that entity is one of the ones in the database
-    core = [ 'studies', 'subjects', 'samples', 'pathology' ]
-    metadata = [ 'atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics',
-                 'metabolomics', 'proteomics', 'rnaseq_bulk',
-                 'rnaseq_single_nucleus', 'whole_genome_seq' ]
-
-    if entity in core:
-      schema = 'core'
-    elif entity in metadata:
-      schema = 'metadata'
-    else:
-      raise ValueError("Parameter 'entity' must be one of these values: " + str(core + metadata))
-    
-    # call the internal call_proc method to handle the database interaction
-    return self.call_proc(schema + '.put_' + entity, query_args, result_prefs)
+    return self.call_proc(schema + '.' + operation + '_' + entity, query_args, result_prefs)

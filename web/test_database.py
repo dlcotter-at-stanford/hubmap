@@ -50,26 +50,35 @@ def test_call_proc_with_stringify_returning_dataset(db):
                 for row in results['data']
                 for value in row ] )
 
+def test_do_check_operation_value_error(db):
+  with pytest.raises(ValueError):
+    assert db.do('insert', 'something')
+
 def test_get_entity_check_value_error(db):
   with pytest.raises(ValueError):
-    assert db.get('nonsense')
+    assert db.do('get', 'nonsense')
 
 def test_get_studies(db):
-  results = db.get('studies')
+  results = db.do('get', 'studies')
   assert results
 
 def test_get_subjects(db):
-  results = db.get('subjects', { 'p_study_bk': 'HuBMAP' })
+  results = db.do('get', 'subjects', { 'p_study_bk': 'HuBMAP' })
   assert results
 
 def test_get_samples(db):
-  results = db.get('samples', { 'p_study_bk': 'HuBMAP', 'p_subject_bk': 'A001' })
+  results = db.do('get', 'samples', { 'p_study_bk': 'HuBMAP', 'p_subject_bk': 'A001' })
   assert results
 
 def test_get_pathology(db):
-  results = db.get('pathology', { 'p_subject_bk': 'A001' })
+  results = db.do('get', 'pathology', { 'p_subject_bk': 'A001' })
   assert results
 
-def test_get_metadata(db):
-  results = db.get('atacseq_bulk_hiseq', { 'p_subject_bk': 'A001', 'p_sample_bk': 'A001-C-002' })
-  assert results
+# Holding off on testing metadata for the moment. We have metadata for assays
+# done of samples that are not in the sample tracker (B001, etc.), so there is
+# no way to link them to a sample via a foreign key, and the query for them
+# comes up blank. Eventually we will have the sample metadata for them, surely.
+
+#def test_get_metadata(db):
+#  results = db.do('get', 'atacseq_bulk_hiseq', { 'p_subject_bk': 'A001', 'p_sample_bk': 'A001-C-002' })
+#  assert results
