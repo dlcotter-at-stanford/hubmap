@@ -19,14 +19,25 @@
 --role
 drop role if exists role_readonly;
 create role role_readonly nosuperuser inherit nocreatedb nocreaterole noreplication;
-grant usage on schema core, metadata, staging to role_readonly;
-grant select on all tables in schema core, metadata, staging to role_readonly;
-alter default privileges in schema core, metadata, staging grant select on tables to role_readonly;
+grant usage on schema core, metadata to role_readonly;
+grant select on all tables in schema core, metadata to role_readonly;
+alter default privileges in schema core, metadata grant select on tables to role_readonly;
+
+drop role if exists role_readwrite;
+create role role_readwrite nosuperuser inherit nocreatedb nocreaterole noreplication;
+grant usage on schema core, metadata to role_readwrite;
+grant select, insert, update, delete on all tables in schema core, metadata to role_readwrite;
+grant select, update on all sequences in schema core, metadata to role_readwrite;
+alter default privileges in schema core, metadata grant select, insert, update on tables to role_readwrite;
 
 --group
 drop role if exists grp_readonly;
 create role grp_readonly nosuperuser inherit nocreatedb nocreaterole noreplication;
 grant role_readonly to grp_readonly;
+
+drop role if exists grp_readwrite;
+create role grp_readwrite nosuperuser inherit nocreatedb nocreaterole noreplication;
+grant role_readwrite to grp_readwrite;
 
 --user
 drop role if exists reader;
@@ -34,3 +45,10 @@ create role reader with login;
 --alter role reader with password 'somepassword';  # set the password manually since this file will be included in the Git repo
 alter role reader valid until 'infinity';
 grant grp_readonly to reader;
+
+drop role if exists editor;
+create role editor with login;
+--alter role editor with password 'somepassword';  # set the password manually since this file will be included in the Git repo
+alter role editor valid until 'infinity';
+grant grp_readwrite to editor;
+
