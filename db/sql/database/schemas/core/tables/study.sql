@@ -4,5 +4,5 @@
 -- alphanumeric naming convention of study).
 create table core.study
   (study_pk     serial primary key
-  ,study_bk     varchar(100) unique)
+  ,study_bk     varchar(100) not null unique)
 ;

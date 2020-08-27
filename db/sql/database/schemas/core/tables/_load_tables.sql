@@ -158,6 +158,7 @@ select
 	,st.box_name
 from staging.sample_tracker st
 join core.tissue on tissue.tissue_bk = st.tissue_number
+where st.building is not null
 ;
 
 -- assay --
