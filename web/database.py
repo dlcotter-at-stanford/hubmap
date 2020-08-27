@@ -2,11 +2,8 @@ from loguru import logger
 from psycopg2.extras import DictCursor
 from typing import Dict, List, Optional
 import decimal
-import functools
 import pdb
 import psycopg2
-import sys
-import traceback
 
 class Database:
   """PostgreSQL Database class."""
@@ -21,8 +18,8 @@ class Database:
       self.host     = 'localhost'
       self.port     =  5432
       self.dbname   = 'biolab'
-      self.username = 'reader'
-      self.password = 'reader'
+      self.username = 'editor'
+      self.password = 'editor'
     else:
       self.host     = config['DATABASE_HOST']
       self.port     = config['DATABASE_PORT']
@@ -80,10 +77,9 @@ class Database:
       raise ValueError("Operation must be one of 'get', 'put', or 'del'")
 
     # check that entity is one of the ones in the database
-    core = [ 'studies', 'subjects', 'samples', 'pathology' ]
-    metadata = [ 'atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics',
-                 'metabolomics', 'proteomics', 'rnaseq_bulk',
-                 'rnaseq_single_nucleus', 'whole_genome_seq' ]
+    core = [ 'study', 'studies', 'subject', 'subjects', 'sample', 'samples', 'pathology' ]
+    metadata = [ 'atacseq_bulk_hiseq', 'atacseq_single_nucleus', 'lipidomics', 'metabolomics',
+                 'proteomics', 'rnaseq_bulk', 'rnaseq_single_nucleus', 'whole_genome_seq' ]
 
     if entity in core:
       schema = 'core'
