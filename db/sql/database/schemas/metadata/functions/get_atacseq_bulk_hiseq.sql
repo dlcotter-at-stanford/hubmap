@@ -1,6 +1,11 @@
-create or replace function metadata.get_atacseq_bulk_hiseq(p_subject_bk varchar(100) default null, p_sample_bk varchar(100) default null)
+create or replace function metadata.get_atacseq_bulk_hiseq
+  (p_study_bk   varchar(100) default null
+  ,p_subject_bk varchar(100) default null
+  ,p_sample_bk  varchar(100) default null)
 returns table
-	(sample_bk varchar(100)
+	(study_bk varchar(100)
+	,subject_bk varchar(100)
+	,sample_bk varchar(100)
 	,study_donor_id varchar(100)
 	,study_tissue_id varchar(100)
 	,execution_datetime timestamp
@@ -44,51 +49,55 @@ returns table
 language sql
 as $$
   select
-     sample_bk
-    ,study_donor_id
-    ,study_tissue_id
-    ,execution_datetime
-    ,protocols_io_doi
-    ,"operator"
-    ,operator_email
-    ,pi
-    ,pi_email
-    ,assay_category
-    ,assay_type
-    ,analyte_class
-    ,is_targeted
-    ,acquisition_instrument_vendor
-    ,acquisition_instrument_model
-    ,is_technical_replicate
-    ,library_id
-    ,bulk_atac_cell_isolation_protocols_io_doi
-    ,nuclei_quality_metric
-    ,bulk_transposition_input_number_nuclei
-    ,transposition_method
-    ,transposition_transposase_source
-    ,transposition_kit_number
-    ,library_construction_protocols_io_doi
-    ,library_layout
-    ,library_adapter_sequence
-    ,library_pcr_cycles
-    ,library_average_fragment_size
-    ,library_creation_date
-    ,sequencing_reagent_kit
-    ,sequencing_read_format
-    ,sequencing_read_percent_q30
-    ,sequencing_phix_percent
-    ,library_final_yield_value
-    ,library_final_yield_units
-    ,library_preparation_kit
-    ,library_concentration_value
-    ,library_concentration_unit
-    ,metadata_path
-    ,data_path
-    ,fastqfilesize
+     study.study_bk
+    ,subject.subject_bk
+    ,sample.sample_bk
+    ,md.study_donor_id
+    ,md.study_tissue_id
+    ,md.execution_datetime
+    ,md.protocols_io_doi
+    ,md."operator"
+    ,md.operator_email
+    ,md.pi
+    ,md.pi_email
+    ,md.assay_category
+    ,md.assay_type
+    ,md.analyte_class
+    ,md.is_targeted
+    ,md.acquisition_instrument_vendor
+    ,md.acquisition_instrument_model
+    ,md.is_technical_replicate
+    ,md.library_id
+    ,md.bulk_atac_cell_isolation_protocols_io_doi
+    ,md.nuclei_quality_metric
+    ,md.bulk_transposition_input_number_nuclei
+    ,md.transposition_method
+    ,md.transposition_transposase_source
+    ,md.transposition_kit_number
+    ,md.library_construction_protocols_io_doi
+    ,md.library_layout
+    ,md.library_adapter_sequence
+    ,md.library_pcr_cycles
+    ,md.library_average_fragment_size
+    ,md.library_creation_date
+    ,md.sequencing_reagent_kit
+    ,md.sequencing_read_format
+    ,md.sequencing_read_percent_q30
+    ,md.sequencing_phix_percent
+    ,md.library_final_yield_value
+    ,md.library_final_yield_units
+    ,md.library_preparation_kit
+    ,md.library_concentration_value
+    ,md.library_concentration_unit
+    ,md.metadata_path
+    ,md.data_path
+    ,md.fastqfilesize
   from metadata.atacseq_bulk_hiseq md
   join core.sample on sample.sample_pk = md.sample_pk
   join core.subject on subject.subject_pk = sample.subject_pk
-  where (p_subject_bk is null or subject.subject_bk = p_subject_bk)
+  join core.study on study.study_pk = subject.study_pk
+  where (p_study_bk is null or study.study_bk = p_study_bk)
+  and (p_subject_bk is null or subject.subject_bk = p_subject_bk)
   and (p_sample_bk is null or sample.sample_bk = p_sample_bk)
 $$
 

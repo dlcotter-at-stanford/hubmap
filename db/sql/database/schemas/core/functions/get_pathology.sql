@@ -3,7 +3,7 @@
 --Status: working properly
 --Purpose: Get pathology data for a given subject
 
-create or replace function core.get_pathology(p_subject_bk character varying)
+create or replace function core.get_pathology(p_study_bk character varying, p_subject_bk character varying)
  returns table(
    sample_bk character varying
   ,normal_tissue bool
@@ -90,10 +90,12 @@ select
 	,pathology.tnm_score
 	,pathology.stage
 	,pathology.additional_details_comments
-from core.subject
-join core.sample on sample.subject_pk = subject.subject_pk
-join core.pathology on pathology.sample_pk = sample.sample_pk
+from core.pathology
+join core.sample on sample.sample_pk = pathology.sample_pk
+join core.subject on sample.subject_pk = subject.subject_pk
+join core.study on study.study_pk = subject.study_pk
 where lower(subject.subject_bk) = lower(p_subject_bk)
+and lower(study.study_bk) = lower(p_study_bk)
 order by sample.sample_bk
 $function$
 ;
