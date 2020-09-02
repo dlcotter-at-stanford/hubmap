@@ -87,6 +87,6 @@ class Database:
       schema = 'metadata'
     else:
       raise ValueError("Parameter 'entity' must be one of these values: " + str(core + metadata))
-    
-    # call the internal call_proc method to handle the database interaction
-    return self.call_proc(schema + '.' + operation + '_' + entity, query_args, result_prefs)
+    proc = schema + '.' + operation + '_' + entity
+
+    return self.call_proc(proc, query_args, result_prefs)

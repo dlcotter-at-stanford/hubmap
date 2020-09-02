@@ -4,100 +4,121 @@ import flask
 import json
 import pdb
 
-### REST API ###
-@app.route("/api/")  # maybe this should take them to docs
-
-@app.route("/api/studies", methods = ["GET", "POST"])
-def studies():
-  db = database.Database(app.config) 
-
-  if flask.request.method == 'GET':
-    studies = db.do('get', 'studies', result_prefs = { "stringify": True })
-    return flask.jsonify(studies)
-
-  if flask.request.method == 'POST':
-    # check that the request is json
-    if not flask.request.is_json:
-      return flask.make_response(('Request missing header Content-Type: application/json', 404))
-
-    if not flask.request.data:
-      return flask.make_response(('No data found in POST request', 404))
-     
-    # try decoding it
-    try:
-      _data_decoded = flask.request.data.decode()
-    except EncodeError as e:
-      error_msg = e.__class__.__name__ + ": " + str(e)
-      return flask.make_response((error_msg, 404))
-
-    # load as json
-    try:
-      _json_loaded = flask.json.loads(_data_decoded)
-    except json.JSONDecodeError as e:
-      error_msg = e.__class__.__name__ + ": " + str(e)
-      return flask.make_response((error_msg, 404))
-
-    # translate route parameters into database parameters
-    if 'study' in _json_loaded:
-      _json_loaded['p_study_bk'] = _json_loaded.pop('study')
-
-    # do database insert
-    study = db.do('put', 'study', query_args = _json_loaded)
-
-    return flask.jsonify(study)
-
-@app.route("/api/<study>/")
-@app.route("/api/studies/<study>/")
-@app.route("/api/studies/<study>/subjects")
-def subjects(study):
-  db = database.Database(app.config) 
-  subjects = db.do( operation = "get"
-                  , entity = "subjects"
-                  , query_args = { "p_study_bk": study.lower() }
-                  , result_prefs = { "stringify": True })
- 
-  return flask.jsonify(subjects)
-
-@app.route("/api/<study>/<subject>/", methods = ["GET", "POST"])
-@app.route("/api/<study>/subjects/<subject>/", methods = ["GET", "POST"])
-@app.route("/api/studies/<study>/subjects/<subject>", methods = ["GET", "POST"])
-def samples(study, subject):
-  db = database.Database(app.config) 
-  samples = db.do( operation = "get"
-                 , entity = "samples"
-                 , query_args = { "p_study_bk": study.lower()
-                                , "p_subject_bk": subject.lower() }
-                 , result_prefs = { "stringify": True })
- 
-  return flask.jsonify(samples)
-
 """
+REST API actions:
     POST for creating new requirements
-
     GET for getting the requirements
-
     PUT (or PATCH) for updating them
 
-    DELETE for deleting them
-
-
 The most common response codes used by APIs include:
-
     200 OK – the API request succeeded (general purpose)
     201 Created – request to create a new record succeeded
     204 No Content – the API request succeeded, but there is no response payload to return
     400 Bad Request – the API request is bad or malformed and could not be processed by the server
     404 Not Found – couldn’t find a record by ID
-
-Advantages of REST API
-* does not require a GUI, but allows for one (or many, e.g. a mobile app, a web app, a desktop app, etc.)
-* language agnostic, so researchers can create/read/update/delete from Python, R, etc.
-* provides layer between user and database to handle authentication, data validation, schema mapping, etc.
-* allows changes to data model without changing API
-* could implement project-level security (so e.g. a researcher could only access HuBMAP data)
-* limits access to database were the web server to be hacked
-* provides access for Ajax queries
 """
+
+def rest_endpoint(func):
+  def wrapper(*args, **kwargs):
+    db = database.Database(app.config) 
+
+    if flask.request.method == 'GET':
+      entity = func(db, *args, **kwargs)
+      return flask.jsonify(entity)
+
+    if flask.request.method == 'POST':
+      # check that the request is json
+      if not flask.request.is_json:
+        return flask.make_response(('Request missing header Content-Type: application/json', 404))
+
+      # check that the request is not empty
+      if not flask.request.data:
+        return flask.make_response(('No data found in POST request', 404))
+       
+      # try decoding the payload
+      try:
+        data_decoded = flask.request.data.decode()
+      except EncodeError as e:
+        error_msg = e.__class__.__name__ + ": " + str(e)
+        return flask.make_response((error_msg, 404))
+
+      # load as json
+      try:
+        json_loaded = flask.json.loads(data_decoded)
+      except json.JSONDecodeError as e:
+        error_msg = e.__class__.__name__ + ": " + str(e)
+        return flask.make_response((error_msg, 404))
+
+      # translate route parameters into database parameters
+      if 'study' in json_loaded:
+        json_loaded['p_study_bk'] = json_loaded.pop('study')
+      if 'subject' in json_loaded:
+        json_loaded['p_subject_bk'] = json_loaded.pop('subject')
+
+      entity = func(db, json_loaded, *args, **kwargs)
+      return flask.jsonify(entity)
+
+  # change the function name so we don't get overlapping views
+  wrapper.__name__ = func.__name__
+
+  return wrapper
+
+### REST API ###
+@app.route("/api/docs")
+
+@app.route("/api/")
+@app.route("/api/studies/")
+@rest_endpoint
+def get_studies(db):
+  return db.do( operation = "get"
+              , entity = "studies"
+              , result_prefs = { "stringify": True })
+
+@app.route("/api/studies/", methods = ["POST"])
+@rest_endpoint
+def post_studies(db, json_input):
+  return db.do( operation = "put"
+              , entity = "study"
+              , query_args = json_input )
+
+@app.route("/api/studies/<study>/subjects/")
+@rest_endpoint
+def get_subjects(db, study):
+  return db.do( operation = "get"
+              , entity = "subjects"
+              , query_args = { "p_study_bk": study.lower() }
+              , result_prefs = { "stringify": True })
+
+@app.route("/api/studies/<study>/subjects/", methods = ["POST"])
+@rest_endpoint
+def post_subjects(db, json_input, study):
+  if 'p_study_bk' in json_input and study != json_input['p_study_bk']:
+    raise ValueError("Value of 'study' in URL and JSON payload do not agree.")
+
+  if 'p_study_bk' not in json_input:
+    raise ValueError("Parent study of sample must be included in JSON payload.")
+
+  return db.do( operation = "put"
+              , entity = "subject"
+              , query_args = json_input )
+
+@app.route("/api/studies/<study>/subjects/<subject>/samples/")
+@rest_endpoint
+def get_samples(db, study, subject):
+  return db.do( operation = "get"
+              , entity = "samples"
+              , query_args = { "p_study_bk": study.lower(), "p_subject_bk": subject.lower() }
+              , result_prefs = { "stringify": True })
+
+@app.route("/api/studies/<study>/subjects/<subject>/samples/", methods = ["POST"])
+@rest_endpoint
+def post_samples(db, study, subject):
+  # should we check that study & subject params match what's in the JSON?
+  return db.do( operation = "put"
+              , entity = "sample"
+              , query_args = json_input
+              , result_prefs = { "stringify": True })
+
 friendly_names = \
   { 'subject_bk' : 'subject'
   , 'sample_bk'  : 'sample name'
@@ -112,4 +133,6 @@ friendly_names = \
 ## convert cryptic/technical column names to user-friendly equivalents
 #if _result_prefs['friendly_names']:
 #  header = [ self.friendly_names[col] if col in self.friendly_names else col.replace('_',' ') for col in header ]
+
+
 

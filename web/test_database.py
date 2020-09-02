@@ -71,7 +71,7 @@ def test_get_samples(db):
   assert results
 
 def test_get_pathology(db):
-  results = db.do('get', 'pathology', { 'p_subject_bk': 'A001' })
+  results = db.do('get', 'pathology', { 'p_study_bk': 'HuBMAP', 'p_subject_bk': 'A001' })
   assert results
 
 # Holding off on testing metadata for the moment. We have metadata for assays

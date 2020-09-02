@@ -17,29 +17,37 @@ def client():
 
 def test_get_studies(client):
   # won't show up in running app since it's using a test client
-  rv = client.get('/api/studies')
+  rv = client.get('/api/studies/')
   assert rv.status_code == 200 and rv.data
   
 def test_post_study_rejects_json_without_header():
   # requires a local web server to be running (not just a mock app client)
-  r = requests.post("http://127.0.0.1:5000/api/studies"
+  r = requests.post("http://127.0.0.1:5000/api/studies/"
                    # missing --> ,headers = {"Content-Type": "application/json"}
                    ,data = "{""study"": ""HTAN""}")
   assert r.status_code == 404
 
 def test_post_study_rejects_malformed_json():
   # requires a local web server to be running (not just a mock app client)
-  r = requests.post("http://127.0.0.1:5000/api/studies"
+  r = requests.post("http://127.0.0.1:5000/api/studies/"
                    ,headers = {"Content-Type": "application/json"}
                    ,data = "{'study': 'HTAN'}")  # single quotes should be double
   assert r.status_code == 404
 
 def test_post_study():
   # requires a local web server to be running (not just a mock app client)
-  req = requests.post('http://127.0.0.1:5000/api/studies'
+  req = requests.post("http://127.0.0.1:5000/api/studies/"
                      ,headers = {"Content-Type": "application/json"}
                      ,data    = '{"study": "HTAN"}')
-  res = requests.get('http://127.0.0.1:5000/api/studies/HTAN/')
+  res = requests.get("http://127.0.0.1:5000/api/studies/HTAN/subjects/")
+  assert res.status_code == 200
+
+def test_post_subject():
+  # requires a local web server to be running (not just a mock app client)
+  req = requests.post("http://127.0.0.1:5000/api/studies/HTAN/subjects/"
+                     ,headers = {"Content-Type": "application/json"}
+                     ,data    = '{"study": "HTAN", "subject": "A001"}')
+  res = requests.get("http://127.0.0.1:5000/api/studies/HTAN/subjects/")
   assert res.status_code == 200
 
 #def test_post_study_idempotent():
@@ -48,7 +56,7 @@ def test_post_study():
 
 def test_get_studies_returns_json(client):
   # won't show up in running app since it's using a test client
-  rv = client.get('/api/studies')
+  rv = client.get('/api/studies/')
   assert rv.status_code == 200 and rv.is_json
 
 def test_get_studies_searches_case_insensitive(client):
