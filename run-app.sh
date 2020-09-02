@@ -15,12 +15,17 @@ set XTRACE
 
 if [ "$FLASK_ENV" = "dev" ]; then
   export FLASK_CONFIG=../dev.cfg
+
+  # Enable debugging mode to provide code reloading and better error messages
   export FLASK_DEBUG=True
+
   python web/app.py
 fi
 
 if [ "$FLASK_ENV" = "prd" ]; then
   export FLASK_CONFIG=../prd.cfg
+
+  # Debug mode should never be used in a production environment
   export FLASK_DEBUG=False
   # kill the existing process if the app is already running (suppress help message if not)
   ps aux | grep -E "python web\/app\.py$" | tr -s ' ' | cut -d' ' -f2 | xargs kill 2>/dev/null

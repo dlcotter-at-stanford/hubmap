@@ -2,12 +2,12 @@ create or replace
 function core.put_subject
          (p_study_bk            varchar(100)
          ,p_subject_bk          varchar(100)
-         ,p_disease_status      varchar(100)
-         ,p_rectum_position     numeric(5,2)
-         ,p_descending_position numeric(5,2)
-         ,p_transverse_position numeric(5,2)
-         ,p_ascending_position  numeric(5,2)
-         ,p_colon_length        numeric(5,2))
+         ,p_disease_status      varchar(100) default null
+         ,p_rectum_position     numeric(5,2) default null
+         ,p_descending_position numeric(5,2) default null
+         ,p_transverse_position numeric(5,2) default null
+         ,p_ascending_position  numeric(5,2) default null
+         ,p_colon_length        numeric(5,2) default null)
 returns table 
          (subject_pk           integer       --used to demonstrated idempotence in REST API
          ,subject_bk           varchar(100)

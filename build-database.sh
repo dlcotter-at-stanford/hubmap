@@ -98,3 +98,4 @@ psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata
 # Security settings
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/roles/role.sql
 psql -q -h localhost -d biolab   -U postgres -c "alter user reader with password '$READER_PW'"
+psql -q -h localhost -d biolab   -U postgres -c "alter user editor with password '$EDITOR_PW'"
