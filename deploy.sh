@@ -8,7 +8,7 @@ set XTRACE
 if gcloud compute ssh "postgresql-1-vm" --zone "us-west1-a" --command "cd biolab; git pull"; then : nothing; else exit; fi
 
 # Securely copy remaining source data to VM using gcloud tools
-if gcloud compute scp --recurse ~/Documents/cell-atlas/hubmap/dev/data-portal/db/data "postgresql-1-vm:~/biolab/db" --zone "us-west1-a"; then : nothing; else exit; fi
+if gcloud compute scp --recurse $DATA_DIR "postgresql-1-vm:~/biolab/db" --zone "us-west1-a"; then : nothing; else exit; fi
 
 # Not copying the config file with environment-specific and sensitive information (copy manually instead)
 
