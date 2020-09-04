@@ -64,7 +64,7 @@ def map(subject_id=None):
   # Prune empty data sets (note: list(...) prevents error from modifying dict
   # while iterating over it)
   for ds in list(datasets):
-    if 'data' not in datasets[ds] or not datasets[ds]['data']:
+    if not datasets[ds] or 'data' not in datasets[ds] or not datasets[ds]['data']:
       del datasets[ds]
 
   return flask.render_template('index.html', title='Samples', subject_id=subject_id, subjects=subjects, tables=datasets)
