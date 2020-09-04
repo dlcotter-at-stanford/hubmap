@@ -1,93 +1,97 @@
 --ATAC-SEQ BULK-HISEQ
-truncate table metadata.atacseq_bulk_hiseq
-;
-insert into metadata.atacseq_bulk_hiseq
-  (sample_pk
-  ,study_donor_id
-  ,study_tissue_id
-  ,execution_datetime
-  ,protocols_io_doi
-  ,operator
-  ,operator_email
-  ,pi
-  ,pi_email
-  ,assay_category
-  ,assay_type
-  ,analyte_class
-  ,is_targeted
-  ,acquisition_instrument_vendor
-  ,acquisition_instrument_model
-  ,is_technical_replicate
-  ,library_id
-  ,bulk_atac_cell_isolation_protocols_io_doi
-  ,nuclei_quality_metric
-  ,bulk_transposition_input_number_nuclei
-  ,transposition_method
-  ,transposition_transposase_source
-  ,transposition_kit_number
-  ,library_construction_protocols_io_doi
-  ,library_layout
-  ,library_adapter_sequence
-  ,library_pcr_cycles
-  ,library_average_fragment_size
-  ,library_creation_date
-  ,sequencing_reagent_kit
-  ,sequencing_read_format
-  ,sequencing_read_percent_q30
-  ,sequencing_phix_percent
-  ,library_final_yield_value
-  ,library_final_yield_units
-  ,library_preparation_kit
-  ,library_concentration_value
-  ,library_concentration_unit
-  ,metadata_path
-  ,data_path
-  ,fastqfilesize)
-select
-   sample.sample_pk
-  ,donor_id
-  ,tissue_id
-  ,execution_datetime::timestamp
-  ,protocols_io_doi
-  ,operator
-  ,operator_email
-  ,pi
-  ,pi_email
-  ,assay_category
-  ,assay_type
-  ,analyte_class
-  ,is_targeted::boolean
-  ,acquisition_instrument_vendor
-  ,acquisition_instrument_model
-  ,is_technical_replicate::boolean
-  ,library_id
-  ,bulk_atac_cell_isolation_protocols_io_doi
-  ,nuclei_quality_metric
-  ,bulk_transposition_input_number_nuclei::integer
-  ,transposition_method
-  ,transposition_transposase_source
-  ,transposition_kit_number
-  ,library_construction_protocols_io_doi
-  ,library_layout
-  ,library_adapter_sequence
-  ,library_pcr_cycles::integer
-  ,library_average_fragment_size::numeric(10,2)
-  ,library_creation_date::timestamp
-  ,sequencing_reagent_kit
-  ,sequencing_read_format
-  ,sequencing_read_percent_q30::numeric(10,2)
-  ,sequencing_phix_percent::numeric(10,2)
-  ,library_final_yield_value::numeric(10,2)
-  ,library_final_yield_units
-  ,library_preparation_kit
-  ,library_concentration_value::numeric(10,2)
-  ,library_concentration_unit
-  ,metadata_path
-  ,data_path
-  ,fastqfilesize::numeric(10,2)
-from staging.metadata_atacseq_bulk_hiseq
-join core.sample on sample.sample_bk = substring(sample_id,1,position('_' in sample_id)-1)
-;
+--truncate table metadata.atacseq_bulk_hiseq
+--;
+--insert into metadata.atacseq_bulk_hiseq
+--  (sample_pk
+--  ,study_donor_id
+--  ,study_tissue_id
+--  ,execution_datetime
+--  ,protocols_io_doi
+--  ,operator
+--  ,operator_email
+--  ,pi
+--  ,pi_email
+--  ,assay_category
+--  ,assay_type
+--  ,analyte_class
+--  ,is_targeted
+--  ,acquisition_instrument_vendor
+--  ,acquisition_instrument_model
+--  ,is_technical_replicate
+--  ,library_id
+--  ,bulk_atac_cell_isolation_protocols_io_doi
+--  ,nuclei_quality_metric
+--  ,bulk_transposition_input_number_nuclei
+--  ,transposition_method
+--  ,transposition_transposase_source
+--  ,transposition_kit_number
+--  ,library_construction_protocols_io_doi
+--  ,library_layout
+--  ,library_adapter_sequence
+--  ,library_pcr_cycles
+--  ,library_final_yield
+--  ,library_final_yield_units
+--  ,library_average_fragment_size
+--  ,library_creation_date
+--  ,sequencing_reagent_kit
+--  ,sequencing_read_format
+--  ,sequencing_read_percent_q30
+--  ,sequencing_phix_percent
+--  ,library_final_yield_value
+--  ,library_final_yield_units
+--  ,library_preparation_kit
+--  ,library_concentration_value
+--  ,library_concentration_unit
+--  ,metadata_path
+--  ,data_path
+--  ,fastqfilesize)
+--select
+--   sample.sample_pk
+--  ,donor_id
+--  ,tissue_id
+--  ,execution_datetime::timestamp
+--  ,protocols_io_doi
+--  ,operator
+--  ,operator_email
+--  ,pi
+--  ,pi_email
+--  ,assay_category
+--  ,assay_type
+--  ,analyte_class
+--  ,is_targeted::boolean
+--  ,acquisition_instrument_vendor
+--  ,acquisition_instrument_model
+--  ,is_technical_replicate::boolean
+--  ,library_id
+--  ,bulk_atac_cell_isolation_protocols_io_doi
+--  ,nuclei_quality_metric
+--  ,bulk_transposition_input_number_nuclei::integer
+--  ,transposition_method
+--  ,transposition_transposase_source
+--  ,transposition_kit_number
+--  ,library_construction_protocols_io_doi
+--  ,library_layout
+--  ,library_adapter_sequence
+--  ,library_pcr_cycles::integer
+--  ,library_final_yield::numeric(10,2)
+--  ,library_final_yield_units
+--  ,library_average_fragment_size::numeric(10,2)
+--  ,library_creation_date::timestamp
+--  ,sequencing_reagent_kit
+--  ,sequencing_read_format
+--  ,sequencing_read_percent_q30::numeric(10,2)
+--  ,sequencing_phix_percent::numeric(10,2)
+--  ,library_final_yield_value::numeric(10,2)
+--  ,library_final_yield_units
+--  ,library_preparation_kit
+--  ,library_concentration_value::numeric(10,2)
+--  ,library_concentration_unit
+--  ,metadata_path
+--  ,data_path
+--  ,fastqfilesize::numeric(10,2)
+--from staging.metadata_atacseq_bulk_hiseq
+--join core.sample on sample.sample_bk = substring(sample_id,1,position('_' in sample_id)-1)
+--;
 
 --ATAC-SEQ SINGLE-NUCLEUS
 truncate table metadata.atacseq_single_nucleus
@@ -161,7 +165,7 @@ select
   ,sc_isolation_tissue_dissociation
   ,sc_isolation_enrichment
   ,sc_isolation_quality_metric
-  ,sc_isolation_cell_number::numeric(8,2)
+  ,sc_isolation_cell_number::numeric(16,2)
   ,transposition_input::integer
   ,transposition_method
   ,transposition_transposase_source
@@ -519,7 +523,8 @@ insert into metadata.rnaseq_bulk
   ,sequencing_read_percent_q30
   ,sequencing_phix_percent
   ,metadata_path
-  ,data_path)
+  ,data_path
+  ,scg_path)
 select
    sample.sample_pk
   ,donor_id
@@ -556,6 +561,7 @@ select
   ,sequencing_phix_percent::numeric(10,2)
   ,metadata_path
   ,data_path
+  ,scg_path
 from staging.metadata_rnaseq_bulk
 join core.sample on sample.sample_bk = sample_id
 ;
@@ -593,14 +599,16 @@ insert into metadata.rnaseq_single_nucleus
   ,cell_barcode_size
   ,library_pcr_cycles
   ,library_pcr_cycles_for_sample_index
-  ,library_final_yield
+  ,library_final_yield_value
+  ,library_final_yield_unit
   ,library_average_fragment_size
   ,sequencing_reagent_kit
   ,sequencing_read_format
   ,sequencing_read_percent_q30
   ,sequencing_phix_percent
   ,metadata_path
-  ,data_path)
+  ,data_path
+  ,kit_version_10x)
 select
    sample_pk
   ,donor_id
@@ -633,7 +641,8 @@ select
   ,cell_barcode_size::integer
   ,library_pcr_cycles::integer
   ,library_pcr_cycles_for_sample_index::integer
-  ,library_final_yield::numeric(10,2)
+  ,library_final_yield_value::numeric(10,2)
+  ,library_final_yield_unit
   ,library_average_fragment_size::numeric(10,2)
   ,sequencing_reagent_kit
   ,sequencing_read_format
@@ -641,6 +650,7 @@ select
   ,sequencing_phix_percent::numeric(10,2)
   ,metadata_path
   ,data_path
+  ,kit_version_10x
 from staging.metadata_rnaseq_single_nucleus
 join core.sample on sample.sample_bk = sample_id
 ;
@@ -710,3 +720,74 @@ select
   ,data_path
 from staging.metadata_whole_genome_seq
 join core.sample on sample.sample_bk = internal_id
+;
+/* --on hold
+--RNA-SEQ SINGLE-NUCLEUS ADDITIONAL
+insert into metadata.rnaseq_single_nucleus
+  (sample_pk
+  ,study_donor_id
+  ,study_tissue_id
+  ,execution_datetime
+  ,protocols_io_doi
+  ,"operator"
+  ,operator_email
+  ,pi 
+  ,pi_email
+  ,assay_category
+  ,assay_type
+  ,analyte_class
+  ,is_targeted
+  ,acquisition_instrument_vendor
+  ,acquisition_instrument_model
+  ,sc_isolation_protocols_io_doi
+  ,sc_isolation_entity
+  ,sc_isolation_tissue_dissociation
+  ,sc_isolation_enrichment
+  ,sc_isolation_quality_metric
+  ,sc_isolation_cell_number
+  ,rnaseq_assay_input
+  ,rnaseq_assay_method
+  ,library_construction_protocols_io_doi
+  ,library_layout
+  ,library_adapter_sequence
+  ,cell_barcode_read
+  ,cell_barcode_offset
+  ,cell_barcode_size
+  ,library_pcr_cycles
+  ,library_pcr_cycles_for_sample_index
+  ,library_final_yield
+  ,library_average_fragment_size
+  ,sequencing_reagent_kit
+  ,sequencing_read_format
+  ,sequencing_read_percent_q30
+  ,sequencing_phix_percent
+  ,metadata_path
+  ,data_path)
+select
+   experiment_date
+  ,sample
+  ,tissue_preservation_method
+  ,tissue_location
+  ,tissue_phenotype
+  ,amt_used_mg
+  ,protocol
+  ,dissociation_method
+  ,dissociation_buffer
+  ,note
+  ,snrnaseq
+  ,yield
+  ,target_recovery_and_10x_cell_concentration
+  ,cdna_conc
+  ,kit_version_10x
+  ,sequencing_submission
+  ,sequencing_parameters
+  ,pass_qc
+  ,snrnaseq_library_created
+  ,snrnaseq_library_sequenced
+  ,snrnaseq_data_quality
+  ,snatacseq
+  ,snatacseq_library_created
+  ,snatacseq_library_sequenced
+  ,snatacseq_data_quality
+
+*/

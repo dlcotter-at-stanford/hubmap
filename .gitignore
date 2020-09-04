@@ -4,11 +4,11 @@
 *.pyc
 *.swp
 *.tsv
+*.vim
 *.xlsx
 .DS_Store
 .Rhistory
 .pgpass
-Session.vim
 __pycache__
 config.sh
 db/archive/

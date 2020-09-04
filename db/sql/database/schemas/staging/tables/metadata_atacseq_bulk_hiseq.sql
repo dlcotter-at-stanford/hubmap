@@ -26,6 +26,8 @@ create table staging.metadata_atacseq_bulk_hiseq
 ,library_layout varchar(100)
 ,library_adapter_sequence varchar(200)
 ,library_pcr_cycles varchar(100)
+,library_final_yield varchar(100)
+,library_final_yield_units varchar(100)
 ,library_average_fragment_size varchar(100)
 ,library_creation_date varchar(100)
 ,sequencing_reagent_kit varchar(100)

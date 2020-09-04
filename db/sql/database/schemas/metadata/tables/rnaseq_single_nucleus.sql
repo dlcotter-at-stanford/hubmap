@@ -31,12 +31,14 @@ create table metadata.rnaseq_single_nucleus
 ,cell_barcode_size integer
 ,library_pcr_cycles integer
 ,library_pcr_cycles_for_sample_index integer
-,library_final_yield numeric(10,2)
+,library_final_yield_value numeric(10,2)
+,library_final_yield_unit varchar(100)
 ,library_average_fragment_size numeric(10,2)
 ,sequencing_reagent_kit varchar(100)
 ,sequencing_read_format varchar(100)
 ,sequencing_read_percent_q30 numeric(10,2)
 ,sequencing_phix_percent numeric(10,2)
 ,metadata_path varchar(100)
-,data_path varchar(100))
+,data_path varchar(100)
+,kit_version_10x varchar(100))
 ;

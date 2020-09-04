@@ -39,7 +39,8 @@ returns table
 	,sequencing_read_percent_q30 varchar(100)
 	,sequencing_phix_percent varchar(100)
 	,metadata_path varchar(100)
-	,data_path varchar(100))
+	,data_path varchar(100)
+	,scg_path varchar(100))
 language sql
 as $$
   select
@@ -80,6 +81,7 @@ as $$
     ,md.sequencing_phix_percent
     ,md.metadata_path
     ,md.data_path
+    ,md.scg_path
   from metadata.rnaseq_bulk md
   join core.sample on sample.sample_pk = md.sample_pk
   join core.subject on subject.subject_pk = sample.subject_pk

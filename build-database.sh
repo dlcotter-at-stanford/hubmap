@@ -40,7 +40,7 @@ psql -q -h localhost -d postgres -U postgres -f db/sql/database/database.sql
 # Staging tables. Order of creation not important.
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/staging/schema.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/staging/tables/colon_measurements.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/staging/tables/metadata_atacseq_bulk_hiseq.sql
+#psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/staging/tables/metadata_atacseq_bulk_hiseq.sql  # on hold until metadata is fixed
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/staging/tables/metadata_atacseq_single_nucleus.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/staging/tables/metadata_lipidomics.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/staging/tables/metadata_metabolomics.sql
@@ -75,7 +75,7 @@ psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/core/fun
 
 # Metadata tables
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/schema.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/tables/atacseq_bulk_hiseq.sql
+# psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/tables/atacseq_bulk_hiseq.sql  # on hold until metadata is fixed
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/tables/atacseq_single_nucleus.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/tables/lipidomics.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/tables/metabolomics.sql
@@ -90,7 +90,7 @@ psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_whole_genome_seq.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_proteomics.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_lipidomics.sql
-psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_atacseq_bulk_hiseq.sql
+# psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_atacseq_bulk_hiseq.sql  # on hold until metadata is fixed
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_metabolomics.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_rnaseq_single_nucleus.sql
 psql -q -h localhost -d biolab   -U postgres -f db/sql/database/schemas/metadata/functions/get_atacseq_single_nucleus.sql

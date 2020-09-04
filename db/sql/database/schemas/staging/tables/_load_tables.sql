@@ -57,13 +57,13 @@ delete from staging.pathology where sample = 'Examples of Responses'
 
 --load metadata
 --ATAC-seq bulk-HiSeq metadata
-\set metadata_atacseq_bulk_path :data_dir '/assay-metadata/atacseq/bulk-hiseq/metadata.tsv'
-;
-copy staging.metadata_atacseq_bulk_hiseq
-from :'metadata_atacseq_bulk_path'
-with delimiter E'\t' --tab separator
-csv header --ignore header
-;
+--\set metadata_atacseq_bulk_path :data_dir '/assay-metadata/atacseq/bulk-hiseq/metadata.tsv'
+--;
+--copy staging.metadata_atacseq_bulk_hiseq
+--from :'metadata_atacseq_bulk_path'
+--with delimiter E'\t' --tab separator
+--csv header --ignore header
+--;
 --ATAC-seq single-nucleus metadata
 \set metadata_atacseq_single_nucleus_path :data_dir '/assay-metadata/atacseq/single-nucleus/metadata.tsv'
 ;

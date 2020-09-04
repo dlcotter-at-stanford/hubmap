@@ -33,5 +33,6 @@ create table staging.metadata_rnaseq_bulk
 ,sequencing_read_percent_q30 varchar(100)
 ,sequencing_phix_percent varchar(100)
 ,metadata_path varchar(100)
-,data_path varchar(100))
+,data_path varchar(100)
+,scg_path varchar(100))
 ;

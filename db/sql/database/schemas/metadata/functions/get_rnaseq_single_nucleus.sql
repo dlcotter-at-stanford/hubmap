@@ -36,14 +36,16 @@ returns table
 	,cell_barcode_size integer
 	,library_pcr_cycles integer
 	,library_pcr_cycles_for_sample_index integer
-	,library_final_yield numeric(10,2)
+	,library_final_yield_value numeric(10,2)
+	,library_final_yield_unit varchar(100)
 	,library_average_fragment_size numeric(10,2)
 	,sequencing_reagent_kit varchar(100)
 	,sequencing_read_format varchar(100)
 	,sequencing_read_percent_q30 numeric(10,2)
 	,sequencing_phix_percent numeric(10,2)
 	,metadata_path varchar(100)
-	,data_path varchar(100))
+	,data_path varchar(100)
+  ,kit_version_10x varchar(100))
 language sql
 as $$
   select
@@ -80,7 +82,8 @@ as $$
     ,md.cell_barcode_size
     ,md.library_pcr_cycles
     ,md.library_pcr_cycles_for_sample_index
-    ,md.library_final_yield
+    ,md.library_final_yield_value
+    ,md.library_final_yield_unit
     ,md.library_average_fragment_size
     ,md.sequencing_reagent_kit
     ,md.sequencing_read_format
@@ -88,6 +91,7 @@ as $$
     ,md.sequencing_phix_percent
     ,md.metadata_path
     ,md.data_path
+    ,md.kit_version_10x
   from metadata.rnaseq_single_nucleus md
   join core.sample on sample.sample_pk = md.sample_pk
   join core.subject on subject.subject_pk = sample.subject_pk

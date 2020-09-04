@@ -22,7 +22,7 @@ create table metadata.atacseq_single_nucleus
 ,sc_isolation_tissue_dissociation varchar(100)
 ,sc_isolation_enrichment varchar(100)
 ,sc_isolation_quality_metric varchar(100)
-,sc_isolation_cell_number numeric(8,2)
+,sc_isolation_cell_number numeric(16,2)
 ,transposition_input integer
 ,transposition_method varchar(100)
 ,transposition_transposase_source varchar(100)

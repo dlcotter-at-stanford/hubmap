@@ -27,6 +27,8 @@ create table metadata.atacseq_bulk_hiseq
 ,library_layout varchar(100)
 ,library_adapter_sequence varchar(200)
 ,library_pcr_cycles integer
+,library_final_yield numeric(10,2)
+,library_final_yield_units varchar(100)
 ,library_average_fragment_size numeric(10,2)
 ,library_creation_date timestamp
 ,sequencing_reagent_kit varchar(100)
