@@ -1,6 +1,7 @@
 *.bak
 *.cfg
 *.png
+*.pptx
 *.pyc
 *.swp
 *.tsv
@@ -10,15 +11,8 @@
 .Rhistory
 .pgpass
 __pycache__
+arch/*
 config.sh
-db/archive/
-db/config.sh
-db/data
-db/sample-tracker.tsv
-db/scripts/config.sh
+cloud_sql_proxy
+data/*
 tags
-typescript
-web/app/__pycache__
-web/app/static/js/lib
-web/scratch
-web/venv
