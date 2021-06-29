@@ -90,7 +90,7 @@ stevedore==1.32.0
 tableschema==1.15.0
 tabulator==1.46.1
 unicodecsv==0.14.1
-urllib3==1.24.3
+urllib3==1.26.5
 virtualenv==20.0.7
 virtualenv-clone==0.5.3
 virtualenvwrapper==4.8.4
